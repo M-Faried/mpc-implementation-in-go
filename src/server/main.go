@@ -5,5 +5,9 @@ import (
 )
 
 func main() {
-	backend.Run(":8000")
+	app := backend.App{
+		Port: ":8000",
+	}
+	app.Initialize()
+	app.Run()
 }

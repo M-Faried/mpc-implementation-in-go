@@ -46,3 +46,16 @@ func (p *product) getProduct(db *sql.DB) error {
 	err := row.Scan(&p.ProductCode, &p.Name, &p.Inventory, &p.Price, &p.Status)
 	return err
 }
+
+func (p *product) newProduct(db *sql.DB) error {
+	res, err := db.Exec("INSERT INTO products(productCode, name, inventory, price, status) VALUES(?, ?, ?, ?, ?)", p.ProductCode, p.Name, p.Inventory, p.Price, p.Status)
+	if err != nil {
+		return err
+	}
+	id, err := res.LastInsertId()
+	if err != nil {
+		return err
+	}
+	p.ID = int(id)
+	return nil
+}

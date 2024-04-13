@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io"
 	"strconv"
 
 	"log"
@@ -33,6 +34,7 @@ func (a *App) initializeRoutes() {
 	a.router.HandleFunc("/", healthCheck).Methods("GET")
 	a.router.HandleFunc("/products", a.allProducts).Methods("GET")
 	a.router.HandleFunc("/products/{id}", a.fetchProduct).Methods("GET")
+	a.router.HandleFunc("/products", a.newProduct).Methods("POST")
 }
 
 func (a *App) Run() {
@@ -74,6 +76,21 @@ func (a *App) fetchProduct(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	respondWithJSON(res, http.StatusOK, prod)
+}
+
+func (a *App) newProduct(res http.ResponseWriter, req *http.Request) {
+	reqBody, _ := io.ReadAll(req.Body)
+	var p product
+	json.Unmarshal(reqBody, &p)
+	err := p.newProduct(a.database)
+
+	if err != nil {
+		fmt.Printf("newProduct error: %s\n", err.Error())
+		respondWithError(res, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	respondWithJSON(res, http.StatusOK, p)
 }
 
 //////////////////// Helper Functions

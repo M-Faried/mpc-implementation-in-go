@@ -48,7 +48,11 @@ func (p *product) getProduct(db *sql.DB) error {
 }
 
 func (p *product) newProduct(db *sql.DB) error {
-	res, err := db.Exec("INSERT INTO products(productCode, name, inventory, price, status) VALUES(?, ?, ?, ?, ?)", p.ProductCode, p.Name, p.Inventory, p.Price, p.Status)
+	query := `
+		INSERT INTO products(productCode, name, inventory, price, status) 
+		VALUES(?, ?, ?, ?, ?)
+	`
+	res, err := db.Exec(query, p.ProductCode, p.Name, p.Inventory, p.Price, p.Status)
 	if err != nil {
 		return err
 	}

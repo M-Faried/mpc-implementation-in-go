@@ -19,7 +19,7 @@ type OrdersController struct {
 func (c *OrdersController) GetAllOrders(res http.ResponseWriter, req *http.Request) {
 	orders, err := c.dbGetAllOrders()
 	if err != nil {
-		fmt.Printf("allOrders err: %s\n", err.Error())
+		fmt.Printf("GetAllOrders err: %s\n", err.Error())
 		respondWithError(res, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -32,7 +32,7 @@ func (c *OrdersController) GetSingleOrder(res http.ResponseWriter, req *http.Req
 	id := vars["id"]
 	intID, err := strconv.Atoi(id)
 	if err != nil {
-		fmt.Printf("fetchOrder invalid order ID: %s\n", err.Error())
+		fmt.Printf("GetSingleOrder invalid order ID: %s\n", err.Error())
 		respondWithError(res, http.StatusBadRequest, "Invalid Order ID")
 		return
 	}
@@ -42,7 +42,7 @@ func (c *OrdersController) GetSingleOrder(res http.ResponseWriter, req *http.Req
 	o.ID = intID
 	err = c.dbGetOrderByID(&o)
 	if err != nil {
-		fmt.Printf("fetchOrder err: %s\n", err.Error())
+		fmt.Printf("GetSingleOrder err: %s\n", err.Error())
 		respondWithError(res, http.StatusNotFound, "Order ID Is Not Found")
 		return
 	}
@@ -55,7 +55,7 @@ func (c *OrdersController) CreateNewOrder(res http.ResponseWriter, req *http.Req
 	json.Unmarshal(reqBody, &o)
 	err := c.dbCreateOrder(&o)
 	if err != nil {
-		fmt.Printf("newOrder error: %s\n", err.Error())
+		fmt.Printf("CreateNewOrder error: %s\n", err.Error())
 		respondWithError(res, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -64,7 +64,7 @@ func (c *OrdersController) CreateNewOrder(res http.ResponseWriter, req *http.Req
 		item.OrderID = o.ID
 		err := c.dbCreateOrderItem(&item)
 		if err != nil {
-			fmt.Printf("newOrder error: %s\n", err.Error())
+			fmt.Printf("CreateNewOrder error: %s\n", err.Error())
 			respondWithError(res, http.StatusBadRequest, err.Error())
 			return
 		}
@@ -80,7 +80,7 @@ func (c *OrdersController) CreateNewOrderItem(res http.ResponseWriter, req *http
 	for _, item := range items {
 		err := c.dbCreateOrderItem(&item)
 		if err != nil {
-			fmt.Printf("newOrderItem error: %s\n", err.Error())
+			fmt.Printf("CreateNewOrderItem error: %s\n", err.Error())
 			respondWithError(res, http.StatusBadRequest, err.Error())
 			return
 		}

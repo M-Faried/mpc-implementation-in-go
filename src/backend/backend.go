@@ -18,9 +18,11 @@ type App struct {
 }
 
 func (a *App) Initialize() {
+	// Creating & initializaing the datasource
 	var source datasources.EcommerceDataSource
 	source.Initialize()
 	a.DS = &source
+	// Creating & initializaing the router
 	a.Router = mux.NewRouter()
 	a.initializeRoutes()
 }

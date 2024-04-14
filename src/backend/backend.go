@@ -5,21 +5,21 @@ import (
 
 	"log"
 	"mofaried/backend/controllers"
-	"mofaried/backend/datasources"
+	"mofaried/backend/models"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
 
 type App struct {
-	DataSource *datasources.EcommerceDataSource
+	DataSource *models.EcommerceDataSource
 	Router     *mux.Router
 	Port       string
 }
 
 func (a *App) Initialize(dbPath string) {
 	// Creating & initializaing the datasource
-	var source datasources.EcommerceDataSource
+	var source models.EcommerceDataSource
 	source.Initialize(dbPath)
 	a.DataSource = &source
 	// Creating & initializaing the router

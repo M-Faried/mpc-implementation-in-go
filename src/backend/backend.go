@@ -12,16 +12,16 @@ import (
 )
 
 type App struct {
-	DS     *datasources.EcommerceDataSource
-	Router *mux.Router
-	Port   string
+	DataSource *datasources.EcommerceDataSource
+	Router     *mux.Router
+	Port       string
 }
 
 func (a *App) Initialize() {
 	// Creating & initializaing the datasource
 	var source datasources.EcommerceDataSource
 	source.Initialize()
-	a.DS = &source
+	a.DataSource = &source
 	// Creating & initializaing the router
 	a.Router = mux.NewRouter()
 	a.initializeRoutes()
@@ -31,14 +31,14 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/", healthCheck).Methods("GET")
 
 	pc := controllers.ProductsController{
-		DS: a.DS,
+		DS: a.DataSource,
 	}
 	a.Router.HandleFunc("/products", pc.GetAllProducts).Methods("GET")
 	a.Router.HandleFunc("/products/{id}", pc.GetSingleProduct).Methods("GET")
 	a.Router.HandleFunc("/products", pc.CreateNewProduct).Methods("POST")
 
 	oc := controllers.OrdersController{
-		DS: a.DS,
+		DS: a.DataSource,
 	}
 	a.Router.HandleFunc("/orders", oc.GetAllOrders).Methods("GET")
 	a.Router.HandleFunc("/orders/{id}", oc.GetSingleOrder).Methods("GET")

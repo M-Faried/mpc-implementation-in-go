@@ -4,10 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"mofaried/backend/models"
 	"net/http"
 	"strconv"
-
-	"mofaried/backend/models"
 
 	"github.com/gorilla/mux"
 )

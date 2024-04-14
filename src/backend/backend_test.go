@@ -45,7 +45,7 @@ const tableOrderItemCreationQuery = `CREATE TABLE IF NOT EXISTS order_items
 
 func TestMain(m *testing.M) {
 	a = App{}
-	a.Initialize("../../../ecommerce.db")
+	a.Initialize("../../../test.db")
 	ensureTableExists()
 	code := m.Run()
 

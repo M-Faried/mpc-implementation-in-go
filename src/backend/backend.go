@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"log"
+	"mofaried/backend/controllers"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -32,9 +33,13 @@ func (a *App) Initialize() {
 
 func (a *App) initializeRoutes() {
 	a.router.HandleFunc("/", healthCheck).Methods("GET")
-	a.router.HandleFunc("/products", a.allProducts).Methods("GET")
-	a.router.HandleFunc("/products/{id}", a.fetchProduct).Methods("GET")
-	a.router.HandleFunc("/products", a.newProduct).Methods("POST")
+
+	pc := controllers.ProductsController{
+		Database: a.database,
+	}
+	a.router.HandleFunc("/products", pc.GetAllProducts).Methods("GET")
+	a.router.HandleFunc("/products/{id}", pc.GetSingleProduct).Methods("GET")
+	a.router.HandleFunc("/products", pc.CreateNewProduct).Methods("POST")
 
 	a.router.HandleFunc("/orders", a.allOrders).Methods("GET")
 	a.router.HandleFunc("/orders/{id}", a.fetchOrder).Methods("GET")
@@ -47,55 +52,6 @@ func (a *App) Run() {
 	// http.Handle("/", a.router)
 	fmt.Println("Server started and listening on the port", a.Port)
 	log.Fatal(http.ListenAndServe(a.Port, a.router))
-}
-
-func (a *App) allProducts(res http.ResponseWriter, req *http.Request) {
-	products, err := getProducts(a.database)
-	if err != nil {
-		fmt.Printf("getProducts err: %s\n", err.Error())
-		respondWithError(res, http.StatusInternalServerError, err.Error())
-		return
-	}
-	respondWithJSON(res, http.StatusOK, products)
-}
-
-func (a *App) fetchProduct(res http.ResponseWriter, req *http.Request) {
-
-	// Parsing the submitted id.
-	vars := mux.Vars(req)
-	id := vars["id"]
-	intID, err := strconv.Atoi(id)
-	if err != nil {
-		fmt.Printf("fetchProduct invalid product ID: %s\n", err.Error())
-		respondWithError(res, http.StatusBadRequest, "Invalid Product ID")
-		return
-	}
-
-	// Reading the corresponding product from the database.
-	var prod product
-	prod.ID = intID
-	err2 := prod.getProduct(a.database)
-	if err2 != nil {
-		fmt.Printf("fetchProduct err: %s\n", err2.Error())
-		respondWithError(res, http.StatusNotFound, "Product ID Is Not Found")
-		return
-	}
-	respondWithJSON(res, http.StatusOK, prod)
-}
-
-func (a *App) newProduct(res http.ResponseWriter, req *http.Request) {
-	reqBody, _ := io.ReadAll(req.Body)
-	var p product
-	json.Unmarshal(reqBody, &p)
-	err := p.newProduct(a.database)
-
-	if err != nil {
-		fmt.Printf("newProduct error: %s\n", err.Error())
-		respondWithError(res, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	respondWithJSON(res, http.StatusOK, p)
 }
 
 func (a *App) allOrders(res http.ResponseWriter, req *http.Request) {

@@ -1,29 +1,26 @@
 package backend
 
 import (
-	"database/sql"
 	"fmt"
 
 	"log"
 	"mofaried/backend/controllers"
+	"mofaried/backend/datasources"
 	"net/http"
 
 	"github.com/gorilla/mux"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 type App struct {
-	DB     *sql.DB
+	DS     *datasources.EcommerceDataSource
 	Router *mux.Router
 	Port   string
 }
 
 func (a *App) Initialize() {
-	database, err := sql.Open("sqlite3", "../../practiceit.db")
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	a.DB = database
+	var source datasources.EcommerceDataSource
+	source.Initialize()
+	a.DS = &source
 	a.Router = mux.NewRouter()
 	a.initializeRoutes()
 }
@@ -32,14 +29,14 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/", healthCheck).Methods("GET")
 
 	pc := controllers.ProductsController{
-		Database: a.DB,
+		DS: a.DS,
 	}
 	a.Router.HandleFunc("/products", pc.GetAllProducts).Methods("GET")
 	a.Router.HandleFunc("/products/{id}", pc.GetSingleProduct).Methods("GET")
 	a.Router.HandleFunc("/products", pc.CreateNewProduct).Methods("POST")
 
 	oc := controllers.OrdersController{
-		Database: a.DB,
+		DS: a.DS,
 	}
 	a.Router.HandleFunc("/orders", oc.GetAllOrders).Methods("GET")
 	a.Router.HandleFunc("/orders/{id}", oc.GetSingleOrder).Methods("GET")

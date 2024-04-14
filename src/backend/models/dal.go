@@ -1,9 +1,8 @@
-package datasources
+package models
 
 import (
 	"database/sql"
 	"log"
-	"mofaried/backend/models"
 	"sync"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -27,14 +26,14 @@ func (c *EcommerceDataSource) Initialize(dbPath string) {
 
 // Product Actions
 
-func (c EcommerceDataSource) GetProducts() ([]models.Product, error) {
+func (c EcommerceDataSource) GetProducts() ([]Product, error) {
 	rows, err := c.DB.Query("SELECT * FROM products")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	products := []models.Product{}
-	var p models.Product
+	products := []Product{}
+	var p Product
 
 	for rows.Next() {
 		err := rows.Scan(&p.ID, &p.ProductCode, &p.Name, &p.Inventory, &p.Price, &p.Status)
@@ -48,7 +47,7 @@ func (c EcommerceDataSource) GetProducts() ([]models.Product, error) {
 	return products, nil
 }
 
-func (c EcommerceDataSource) FindProductByID(p *models.Product) error {
+func (c EcommerceDataSource) FindProductByID(p *Product) error {
 	query := `
 		SELECT productCode, name, inventory, price, status 
 		FROM products 
@@ -60,7 +59,7 @@ func (c EcommerceDataSource) FindProductByID(p *models.Product) error {
 	return err
 }
 
-func (c EcommerceDataSource) CreateProduct(p *models.Product) error {
+func (c EcommerceDataSource) CreateProduct(p *Product) error {
 	query := `
 		INSERT INTO products(productCode, name, inventory, price, status) 
 		VALUES(?, ?, ?, ?, ?)
@@ -79,16 +78,16 @@ func (c EcommerceDataSource) CreateProduct(p *models.Product) error {
 
 // Order Actions
 
-func (c EcommerceDataSource) GetAllOrders() ([]models.Order, error) {
+func (c EcommerceDataSource) GetAllOrders() ([]Order, error) {
 	rows, err := c.DB.Query("SELECT * FROM orders")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	orders := []models.Order{}
+	orders := []Order{}
 	for rows.Next() {
-		var o models.Order
+		var o Order
 		err := rows.Scan(&o.ID, &o.CustomerName, &o.Total, &o.Status)
 		if err != nil {
 			return orders, err
@@ -104,7 +103,7 @@ func (c EcommerceDataSource) GetAllOrders() ([]models.Order, error) {
 	return orders, nil
 }
 
-func (c EcommerceDataSource) GetOrderItems(o *models.Order) error {
+func (c EcommerceDataSource) GetOrderItems(o *Order) error {
 	query := `
 		SELECT * 
 		FROM order_items
@@ -115,9 +114,9 @@ func (c EcommerceDataSource) GetOrderItems(o *models.Order) error {
 		return err
 	}
 	defer rows.Close()
-	var orderItems []models.OrderItem
+	var orderItems []OrderItem
 	for rows.Next() {
-		var item models.OrderItem
+		var item OrderItem
 		err := rows.Scan(&item.OrderID, &item.ProductID, &item.Quantity)
 		if err != nil {
 			return err
@@ -129,7 +128,7 @@ func (c EcommerceDataSource) GetOrderItems(o *models.Order) error {
 	return nil
 }
 
-func (c EcommerceDataSource) GetOrderByID(o *models.Order) error {
+func (c EcommerceDataSource) GetOrderByID(o *Order) error {
 	query := `
 		SELECT customerName, total, status
 		FROM orders
@@ -147,7 +146,7 @@ func (c EcommerceDataSource) GetOrderByID(o *models.Order) error {
 	return nil
 }
 
-func (c EcommerceDataSource) CreateOrder(o *models.Order) error {
+func (c EcommerceDataSource) CreateOrder(o *Order) error {
 	query := `
 		INSERT INTO orders(customerName, total, status) 
 		VALUES(?, ?, ?)
@@ -164,7 +163,7 @@ func (c EcommerceDataSource) CreateOrder(o *models.Order) error {
 	return nil
 }
 
-func (c EcommerceDataSource) CreateOrderItem(item *models.OrderItem) error {
+func (c EcommerceDataSource) CreateOrderItem(item *OrderItem) error {
 	query := `
 		INSERT INTO order_items(order_id, product_id, quantity) 
 		VALUES(?, ?, ?)

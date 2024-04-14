@@ -10,7 +10,7 @@ import (
 )
 
 type EcommerceDataSource struct {
-	db *sql.DB
+	DB *sql.DB
 }
 
 var once sync.Once
@@ -21,14 +21,14 @@ func (c *EcommerceDataSource) Initialize() {
 		if err != nil {
 			log.Fatal(err.Error())
 		}
-		c.db = database
+		c.DB = database
 	})
 }
 
 // Product Actions
 
 func (c EcommerceDataSource) GetProducts() ([]models.Product, error) {
-	rows, err := c.db.Query("SELECT * FROM products")
+	rows, err := c.DB.Query("SELECT * FROM products")
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func (c EcommerceDataSource) FindProductByID(p *models.Product) error {
 		FROM products 
 		WHERE id=?
 	`
-	row := c.db.QueryRow(query, p.ID)
+	row := c.DB.QueryRow(query, p.ID)
 
 	err := row.Scan(&p.ProductCode, &p.Name, &p.Inventory, &p.Price, &p.Status)
 	return err
@@ -65,7 +65,7 @@ func (c EcommerceDataSource) CreateProduct(p *models.Product) error {
 		INSERT INTO products(productCode, name, inventory, price, status) 
 		VALUES(?, ?, ?, ?, ?)
 	`
-	res, err := c.db.Exec(query, p.ProductCode, p.Name, p.Inventory, p.Price, p.Status)
+	res, err := c.DB.Exec(query, p.ProductCode, p.Name, p.Inventory, p.Price, p.Status)
 	if err != nil {
 		return err
 	}
@@ -80,7 +80,7 @@ func (c EcommerceDataSource) CreateProduct(p *models.Product) error {
 // Order Actions
 
 func (c EcommerceDataSource) GetAllOrders() ([]models.Order, error) {
-	rows, err := c.db.Query("SELECT * FROM orders")
+	rows, err := c.DB.Query("SELECT * FROM orders")
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +110,7 @@ func (c EcommerceDataSource) GetOrderItems(o *models.Order) error {
 		FROM order_items
 		WHERE order_id=?
 	`
-	rows, err := c.db.Query(query, o.ID)
+	rows, err := c.DB.Query(query, o.ID)
 	if err != nil {
 		return err
 	}
@@ -135,7 +135,7 @@ func (c EcommerceDataSource) GetOrderByID(o *models.Order) error {
 		FROM orders
 		WHERE id=?
 	`
-	row := c.db.QueryRow(query, o.ID)
+	row := c.DB.QueryRow(query, o.ID)
 	err := row.Scan(&o.CustomerName, &o.Total, &o.Status)
 	if err != nil {
 		return err
@@ -152,7 +152,7 @@ func (c EcommerceDataSource) CreateOrder(o *models.Order) error {
 		INSERT INTO orders(customerName, total, status) 
 		VALUES(?, ?, ?)
 	`
-	result, err := c.db.Exec(query, o.CustomerName, o.Total, o.Status)
+	result, err := c.DB.Exec(query, o.CustomerName, o.Total, o.Status)
 	if err != nil {
 		return err
 	}
@@ -169,7 +169,7 @@ func (c EcommerceDataSource) CreateOrderItem(item *models.OrderItem) error {
 		INSERT INTO order_items(order_id, product_id, quantity) 
 		VALUES(?, ?, ?)
 	`
-	_, err := c.db.Exec(query, item.OrderID, item.ProductID, item.Quantity)
+	_, err := c.DB.Exec(query, item.OrderID, item.ProductID, item.Quantity)
 	if err != nil {
 		return err
 	}

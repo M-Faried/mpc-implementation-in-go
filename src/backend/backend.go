@@ -13,9 +13,9 @@ import (
 )
 
 type App struct {
-	database *sql.DB
-	router   *mux.Router
-	Port     string
+	DB     *sql.DB
+	Router *mux.Router
+	Port   string
 }
 
 func (a *App) Initialize() {
@@ -23,35 +23,35 @@ func (a *App) Initialize() {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	a.database = database
-	a.router = mux.NewRouter()
+	a.DB = database
+	a.Router = mux.NewRouter()
 	a.initializeRoutes()
 }
 
 func (a *App) initializeRoutes() {
-	a.router.HandleFunc("/", healthCheck).Methods("GET")
+	a.Router.HandleFunc("/", healthCheck).Methods("GET")
 
 	pc := controllers.ProductsController{
-		Database: a.database,
+		Database: a.DB,
 	}
-	a.router.HandleFunc("/products", pc.GetAllProducts).Methods("GET")
-	a.router.HandleFunc("/products/{id}", pc.GetSingleProduct).Methods("GET")
-	a.router.HandleFunc("/products", pc.CreateNewProduct).Methods("POST")
+	a.Router.HandleFunc("/products", pc.GetAllProducts).Methods("GET")
+	a.Router.HandleFunc("/products/{id}", pc.GetSingleProduct).Methods("GET")
+	a.Router.HandleFunc("/products", pc.CreateNewProduct).Methods("POST")
 
 	oc := controllers.OrdersController{
-		Database: a.database,
+		Database: a.DB,
 	}
-	a.router.HandleFunc("/orders", oc.GetAllOrders).Methods("GET")
-	a.router.HandleFunc("/orders/{id}", oc.GetSingleOrder).Methods("GET")
-	a.router.HandleFunc("/orders", oc.CreateNewOrder).Methods("POST")
-	a.router.HandleFunc("/orderitems", oc.CreateNewOrderItem).Methods("POST")
+	a.Router.HandleFunc("/orders", oc.GetAllOrders).Methods("GET")
+	a.Router.HandleFunc("/orders/{id}", oc.GetSingleOrder).Methods("GET")
+	a.Router.HandleFunc("/orders", oc.CreateNewOrder).Methods("POST")
+	a.Router.HandleFunc("/orderitems", oc.CreateNewOrderItem).Methods("POST")
 }
 
 func (a *App) Run() {
 	// You can do the following as well.
 	// http.Handle("/", a.router)
 	fmt.Println("Server started and listening on the port", a.Port)
-	log.Fatal(http.ListenAndServe(a.Port, a.router))
+	log.Fatal(http.ListenAndServe(a.Port, a.Router))
 }
 
 //////////////////// Helper Functions

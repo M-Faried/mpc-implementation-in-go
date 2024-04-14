@@ -1,4 +1,4 @@
-package backend_test
+package backend
 
 import (
 	"fmt"
@@ -8,13 +8,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"log"
-	"mofaried/backend"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
 )
 
-var a backend.App
+var a App
 
 const tableProductCreationQuery = `CREATE TABLE IF NOT EXISTS products
 (
@@ -45,8 +44,8 @@ const tableOrderItemCreationQuery = `CREATE TABLE IF NOT EXISTS order_items
 )`
 
 func TestMain(m *testing.M) {
-	a = backend.App{}
-	a.Initialize()
+	a = App{}
+	a.Initialize("../../../ecommerce.db")
 	ensureTableExists()
 	code := m.Run()
 

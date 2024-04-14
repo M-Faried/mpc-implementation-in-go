@@ -17,7 +17,7 @@ var once sync.Once
 
 func (c *EcommerceDataSource) Initialize() {
 	once.Do(func() {
-		database, err := sql.Open("sqlite3", "../../practiceit.db")
+		database, err := sql.Open("sqlite3", "../../ecommerce.db")
 		if err != nil {
 			log.Fatal(err.Error())
 		}

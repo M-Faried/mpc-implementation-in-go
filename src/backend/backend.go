@@ -2,7 +2,6 @@ package backend
 
 import (
 	"fmt"
-
 	"log"
 	"mofaried/backend/controllers"
 	"mofaried/backend/models"

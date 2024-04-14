@@ -17,10 +17,10 @@ type App struct {
 	Port       string
 }
 
-func (a *App) Initialize() {
+func (a *App) Initialize(dbPath string) {
 	// Creating & initializaing the datasource
 	var source datasources.EcommerceDataSource
-	source.Initialize()
+	source.Initialize(dbPath)
 	a.DataSource = &source
 	// Creating & initializaing the router
 	a.Router = mux.NewRouter()

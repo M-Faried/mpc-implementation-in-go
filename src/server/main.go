@@ -8,6 +8,6 @@ func main() {
 	app := backend.App{
 		Port: ":8000",
 	}
-	app.Initialize()
+	app.Initialize("../../ecommerce.db")
 	app.Run()
 }

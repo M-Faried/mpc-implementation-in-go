@@ -15,9 +15,9 @@ type EcommerceDataSource struct {
 
 var once sync.Once
 
-func (c *EcommerceDataSource) Initialize() {
+func (c *EcommerceDataSource) Initialize(dbPath string) {
 	once.Do(func() {
-		database, err := sql.Open("sqlite3", "../../ecommerce.db")
+		database, err := sql.Open("sqlite3", dbPath)
 		if err != nil {
 			log.Fatal(err.Error())
 		}

@@ -12,14 +12,14 @@ import (
 )
 
 type App struct {
-	DataSource *models.EcommerceDataSource
+	DataSource *models.EcommerceDal
 	Router     *mux.Router
 	Port       string
 }
 
 func (a *App) Initialize(dbPath string) {
 	// Creating & initializaing the datasource
-	var source models.EcommerceDataSource
+	var source models.EcommerceDal
 	source.Initialize(dbPath)
 	a.DataSource = &source
 	// Creating & initializaing the router

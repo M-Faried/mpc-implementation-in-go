@@ -8,13 +8,13 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-type EcommerceDataSource struct {
+type EcommerceDal struct {
 	DB *sql.DB
 }
 
 var once sync.Once
 
-func (c *EcommerceDataSource) Initialize(dbPath string) {
+func (c *EcommerceDal) Initialize(dbPath string) {
 	once.Do(func() {
 		database, err := sql.Open("sqlite3", dbPath)
 		if err != nil {
@@ -26,7 +26,7 @@ func (c *EcommerceDataSource) Initialize(dbPath string) {
 
 // Product Actions
 
-func (c EcommerceDataSource) GetProducts() ([]Product, error) {
+func (c EcommerceDal) GetProducts() ([]Product, error) {
 	rows, err := c.DB.Query("SELECT * FROM products")
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func (c EcommerceDataSource) GetProducts() ([]Product, error) {
 	return products, nil
 }
 
-func (c EcommerceDataSource) FindProductByID(p *Product) error {
+func (c EcommerceDal) FindProductByID(p *Product) error {
 	query := `
 		SELECT productCode, name, inventory, price, status 
 		FROM products 
@@ -59,7 +59,7 @@ func (c EcommerceDataSource) FindProductByID(p *Product) error {
 	return err
 }
 
-func (c EcommerceDataSource) CreateProduct(p *Product) error {
+func (c EcommerceDal) CreateProduct(p *Product) error {
 	query := `
 		INSERT INTO products(productCode, name, inventory, price, status) 
 		VALUES(?, ?, ?, ?, ?)
@@ -78,7 +78,7 @@ func (c EcommerceDataSource) CreateProduct(p *Product) error {
 
 // Order Actions
 
-func (c EcommerceDataSource) GetAllOrders() ([]Order, error) {
+func (c EcommerceDal) GetAllOrders() ([]Order, error) {
 	rows, err := c.DB.Query("SELECT * FROM orders")
 	if err != nil {
 		return nil, err
@@ -103,7 +103,7 @@ func (c EcommerceDataSource) GetAllOrders() ([]Order, error) {
 	return orders, nil
 }
 
-func (c EcommerceDataSource) GetOrderItems(o *Order) error {
+func (c EcommerceDal) GetOrderItems(o *Order) error {
 	query := `
 		SELECT * 
 		FROM order_items
@@ -128,7 +128,7 @@ func (c EcommerceDataSource) GetOrderItems(o *Order) error {
 	return nil
 }
 
-func (c EcommerceDataSource) GetOrderByID(o *Order) error {
+func (c EcommerceDal) GetOrderByID(o *Order) error {
 	query := `
 		SELECT customerName, total, status
 		FROM orders
@@ -146,7 +146,7 @@ func (c EcommerceDataSource) GetOrderByID(o *Order) error {
 	return nil
 }
 
-func (c EcommerceDataSource) CreateOrder(o *Order) error {
+func (c EcommerceDal) CreateOrder(o *Order) error {
 	query := `
 		INSERT INTO orders(customerName, total, status) 
 		VALUES(?, ?, ?)
@@ -163,7 +163,7 @@ func (c EcommerceDataSource) CreateOrder(o *Order) error {
 	return nil
 }
 
-func (c EcommerceDataSource) CreateOrderItem(item *OrderItem) error {
+func (c EcommerceDal) CreateOrderItem(item *OrderItem) error {
 	query := `
 		INSERT INTO order_items(order_id, product_id, quantity) 
 		VALUES(?, ?, ?)

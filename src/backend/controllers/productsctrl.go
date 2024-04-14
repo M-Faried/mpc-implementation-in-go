@@ -18,9 +18,9 @@ type ProductsController struct {
 }
 
 func (c *ProductsController) GetAllProducts(res http.ResponseWriter, req *http.Request) {
-	products, err := dbGetProducts(c.Database)
+	products, err := c.dbGetProducts()
 	if err != nil {
-		fmt.Printf("getProducts err: %s\n", err.Error())
+		fmt.Printf("GetAllProducts err: %s\n", err.Error())
 		respondWithError(res, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -31,32 +31,35 @@ func (c *ProductsController) GetSingleProduct(res http.ResponseWriter, req *http
 
 	// Parsing the submitted id.
 	vars := mux.Vars(req)
-	id := vars["id"]
-	intID, err := strconv.Atoi(id)
+	paramID := vars["id"]
+	id, err := strconv.Atoi(paramID)
 	if err != nil {
-		fmt.Printf("fetchProduct invalid product ID: %s\n", err.Error())
+		fmt.Printf("GetSingleProduct invalid product ID: %s\n", err.Error())
 		respondWithError(res, http.StatusBadRequest, "Invalid Product ID")
 		return
 	}
 
 	// Reading the corresponding product from the database.
-	prod, err := dbFindProductByID(c.Database, intID)
+	p := models.Product{
+		ID: id,
+	}
+	err = c.dbFindProductByID(&p)
 	if err != nil {
-		fmt.Printf("fetchProduct err: %s\n", err.Error())
+		fmt.Printf("GetSingleProduct err: %s\n", err.Error())
 		respondWithError(res, http.StatusNotFound, "Product ID Is Not Found")
 		return
 	}
-	respondWithJSON(res, http.StatusOK, prod)
+	respondWithJSON(res, http.StatusOK, p)
 }
 
 func (c *ProductsController) CreateNewProduct(res http.ResponseWriter, req *http.Request) {
 	reqBody, _ := io.ReadAll(req.Body)
 	var p models.Product
 	json.Unmarshal(reqBody, &p)
-	err := dbCreateProduct(c.Database, &p)
+	err := c.dbCreateProduct(&p)
 
 	if err != nil {
-		fmt.Printf("newProduct error: %s\n", err.Error())
+		fmt.Printf("CreateNewProduct error: %s\n", err.Error())
 		respondWithError(res, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -66,8 +69,8 @@ func (c *ProductsController) CreateNewProduct(res http.ResponseWriter, req *http
 
 //////////////// DB functions
 
-func dbGetProducts(db *sql.DB) ([]models.Product, error) {
-	rows, err := db.Query("SELECT * FROM products")
+func (c *ProductsController) dbGetProducts() ([]models.Product, error) {
+	rows, err := c.Database.Query("SELECT * FROM products")
 	if err != nil {
 		return nil, err
 	}
@@ -87,26 +90,24 @@ func dbGetProducts(db *sql.DB) ([]models.Product, error) {
 	return products, nil
 }
 
-func dbFindProductByID(db *sql.DB, prodID int) (models.Product, error) {
+func (c *ProductsController) dbFindProductByID(p *models.Product) error {
 	query := `
 		SELECT productCode, name, inventory, price, status 
 		FROM products 
 		WHERE id=?
 	`
-	row := db.QueryRow(query, prodID)
-	p := models.Product{
-		ID: prodID,
-	}
+	row := c.Database.QueryRow(query, p.ID)
+
 	err := row.Scan(&p.ProductCode, &p.Name, &p.Inventory, &p.Price, &p.Status)
-	return p, err
+	return err
 }
 
-func dbCreateProduct(db *sql.DB, p *models.Product) error {
+func (c *ProductsController) dbCreateProduct(p *models.Product) error {
 	query := `
 		INSERT INTO products(productCode, name, inventory, price, status) 
 		VALUES(?, ?, ?, ?, ?)
 	`
-	res, err := db.Exec(query, p.ProductCode, p.Name, p.Inventory, p.Price, p.Status)
+	res, err := c.Database.Exec(query, p.ProductCode, p.Name, p.Inventory, p.Price, p.Status)
 	if err != nil {
 		return err
 	}

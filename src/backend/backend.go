@@ -2,10 +2,7 @@ package backend
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
-	"io"
-	"strconv"
 
 	"log"
 	"mofaried/backend/controllers"
@@ -41,10 +38,13 @@ func (a *App) initializeRoutes() {
 	a.router.HandleFunc("/products/{id}", pc.GetSingleProduct).Methods("GET")
 	a.router.HandleFunc("/products", pc.CreateNewProduct).Methods("POST")
 
-	a.router.HandleFunc("/orders", a.allOrders).Methods("GET")
-	a.router.HandleFunc("/orders/{id}", a.fetchOrder).Methods("GET")
-	a.router.HandleFunc("/orders", a.newOrder).Methods("POST")
-	a.router.HandleFunc("/orderitems", a.newOrderItem).Methods("POST")
+	oc := controllers.OrdersController{
+		Database: a.database,
+	}
+	a.router.HandleFunc("/orders", oc.GetAllOrders).Methods("GET")
+	a.router.HandleFunc("/orders/{id}", oc.GetSingleOrder).Methods("GET")
+	a.router.HandleFunc("/orders", oc.CreateNewOrder).Methods("POST")
+	a.router.HandleFunc("/orderitems", oc.CreateNewOrderItem).Methods("POST")
 }
 
 func (a *App) Run() {
@@ -54,96 +54,9 @@ func (a *App) Run() {
 	log.Fatal(http.ListenAndServe(a.Port, a.router))
 }
 
-func (a *App) allOrders(res http.ResponseWriter, req *http.Request) {
-	orders, err := getAllOrders(a.database)
-	if err != nil {
-		fmt.Printf("allOrders err: %s\n", err.Error())
-		respondWithError(res, http.StatusInternalServerError, err.Error())
-		return
-	}
-	respondWithJSON(res, http.StatusOK, orders)
-}
-
-func (a *App) fetchOrder(res http.ResponseWriter, req *http.Request) {
-	// Parsing the submitted id.
-	vars := mux.Vars(req)
-	id := vars["id"]
-	intID, err := strconv.Atoi(id)
-	if err != nil {
-		fmt.Printf("fetchOrder invalid order ID: %s\n", err.Error())
-		respondWithError(res, http.StatusBadRequest, "Invalid Order ID")
-		return
-	}
-
-	// Reading the corresponding product from the database.
-	var o order
-	o.ID = intID
-	err = o.getOrder(a.database)
-	if err != nil {
-		fmt.Printf("fetchOrder err: %s\n", err.Error())
-		respondWithError(res, http.StatusNotFound, "Product ID Is Not Found")
-		return
-	}
-	respondWithJSON(res, http.StatusOK, o)
-}
-
-func (a *App) newOrder(res http.ResponseWriter, req *http.Request) {
-	reqBody, _ := io.ReadAll(req.Body)
-	var o order
-	json.Unmarshal(reqBody, &o)
-	err := o.createOrder(a.database)
-	if err != nil {
-		fmt.Printf("newOrder error: %s\n", err.Error())
-		respondWithError(res, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	for _, item := range o.Items {
-		item.OrderID = o.ID
-		err := item.createOrderItem(a.database)
-		if err != nil {
-			fmt.Printf("newOrder error: %s\n", err.Error())
-			respondWithError(res, http.StatusBadRequest, err.Error())
-			return
-		}
-	}
-
-	respondWithJSON(res, http.StatusOK, o)
-}
-
-func (a *App) newOrderItem(res http.ResponseWriter, req *http.Request) {
-	reqBody, _ := io.ReadAll(req.Body)
-	var items []orderItem
-	json.Unmarshal(reqBody, &items)
-	for _, item := range items {
-		err := item.createOrderItem(a.database)
-		if err != nil {
-			fmt.Printf("newOrderItem error: %s\n", err.Error())
-			respondWithError(res, http.StatusBadRequest, err.Error())
-			return
-		}
-	}
-
-	respondWithJSON(res, http.StatusOK, items)
-}
-
 //////////////////// Helper Functions
 
 func healthCheck(res http.ResponseWriter, req *http.Request) {
 	log.Println("A new request received!")
 	fmt.Fprintf(res, "Hello World")
-}
-
-// respondWithError sets the error response to the response writer
-func respondWithError(res http.ResponseWriter, code int, message string) {
-	respondWithJSON(res, code, map[string]string{"error": message})
-}
-
-// respondWithJSON sets the response payload in the response writer
-func respondWithJSON(res http.ResponseWriter, code int, payload interface{}) {
-	response, _ := json.Marshal(payload)
-
-	res.Header().Set("Content-Type", "application/json")
-	res.WriteHeader(code)
-	res.Write(response)
 }

@@ -56,6 +56,5 @@ func (a *App) Run() {
 //////////////////// Helper Functions
 
 func healthCheck(res http.ResponseWriter, req *http.Request) {
-	log.Println("A new request received!")
 	fmt.Fprintf(res, "Hello World")
 }

@@ -1,10 +1,10 @@
-package backend
+package api
 
 import (
 	"fmt"
 	"log"
-	"mofaried/backend/controllers"
-	"mofaried/backend/models"
+	"mofaried/api/controllers"
+	"mofaried/api/models"
 	"net/http"
 
 	"github.com/gorilla/mux"

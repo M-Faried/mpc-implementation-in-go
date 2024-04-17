@@ -1,11 +1,11 @@
 package main
 
 import (
-	"mofaried/backend"
+	"mofaried/api"
 )
 
 func main() {
-	app := backend.App{
+	app := api.App{
 		Port: ":8000",
 	}
 	app.Initialize("../../ecommerce.db")

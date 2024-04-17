@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"mofaried/backend/models"
+	"mofaried/api/models"
 	"net/http"
 	"strconv"
 

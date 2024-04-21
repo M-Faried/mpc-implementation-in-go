@@ -18,17 +18,17 @@ type IOrdersController interface {
 	AddOrderItems(items []models.OrderItem) error
 }
 
-type OrdersRouter struct {
+type OrdersRoutesHandler struct {
 	ctrl IOrdersController
 }
 
-func NewOrdersRouter(controller IOrdersController) *OrdersRouter {
-	return &OrdersRouter{
+func NewOrdersRoutesHandler(controller IOrdersController) *OrdersRoutesHandler {
+	return &OrdersRoutesHandler{
 		ctrl: controller,
 	}
 }
 
-func (or *OrdersRouter) GetAllOrders(res http.ResponseWriter, req *http.Request) {
+func (or *OrdersRoutesHandler) GetAllOrders(res http.ResponseWriter, req *http.Request) {
 	orders, err := or.ctrl.GetAllOrders()
 	if err != nil {
 		fmt.Printf("GetAllOrders err: %s\n", err.Error())
@@ -38,7 +38,7 @@ func (or *OrdersRouter) GetAllOrders(res http.ResponseWriter, req *http.Request)
 	respondWithJSON(res, http.StatusOK, orders)
 }
 
-func (or *OrdersRouter) GetSingleOrder(res http.ResponseWriter, req *http.Request) {
+func (or *OrdersRoutesHandler) GetSingleOrder(res http.ResponseWriter, req *http.Request) {
 	// Parsing the submitted id.
 	vars := mux.Vars(req)
 	id := vars["id"]
@@ -59,7 +59,7 @@ func (or *OrdersRouter) GetSingleOrder(res http.ResponseWriter, req *http.Reques
 	respondWithJSON(res, http.StatusOK, o)
 }
 
-func (or *OrdersRouter) CreateNewOrder(res http.ResponseWriter, req *http.Request) {
+func (or *OrdersRoutesHandler) CreateNewOrder(res http.ResponseWriter, req *http.Request) {
 	reqBody, _ := io.ReadAll(req.Body)
 	var o models.Order
 	json.Unmarshal(reqBody, &o)
@@ -72,7 +72,7 @@ func (or *OrdersRouter) CreateNewOrder(res http.ResponseWriter, req *http.Reques
 	respondWithJSON(res, http.StatusOK, o)
 }
 
-func (or *OrdersRouter) CreateNewOrderItems(res http.ResponseWriter, req *http.Request) {
+func (or *OrdersRoutesHandler) CreateNewOrderItems(res http.ResponseWriter, req *http.Request) {
 	reqBody, _ := io.ReadAll(req.Body)
 	var items []models.OrderItem
 	json.Unmarshal(reqBody, &items)

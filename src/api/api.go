@@ -37,7 +37,7 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/products", pr.CreateNewProduct).Methods("POST")
 
 	oc := ctrls.NewOrdersController(a.DataSource)
-	or := handlers.NewOrdersRouter(oc)
+	or := handlers.NewOrdersRoutesHandler(oc)
 	a.Router.HandleFunc("/orders", or.GetAllOrders).Methods("GET")
 	a.Router.HandleFunc("/orders/{id}", or.GetSingleOrder).Methods("GET")
 	a.Router.HandleFunc("/orders", or.CreateNewOrder).Methods("POST")

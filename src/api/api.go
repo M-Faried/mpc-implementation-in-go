@@ -37,10 +37,11 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/products", pr.CreateNewProduct).Methods("POST")
 
 	oc := ctrls.NewOrdersController(a.DataSource)
-	a.Router.HandleFunc("/orders", oc.GetAllOrders).Methods("GET")
-	a.Router.HandleFunc("/orders/{id}", oc.GetSingleOrder).Methods("GET")
-	a.Router.HandleFunc("/orders", oc.CreateNewOrder).Methods("POST")
-	a.Router.HandleFunc("/orderitems", oc.CreateNewOrderItem).Methods("POST")
+	or := routers.NewOrdersRouter(oc)
+	a.Router.HandleFunc("/orders", or.GetAllOrders).Methods("GET")
+	a.Router.HandleFunc("/orders/{id}", or.GetSingleOrder).Methods("GET")
+	a.Router.HandleFunc("/orders", or.CreateNewOrder).Methods("POST")
+	a.Router.HandleFunc("/orderitems", or.CreateNewOrderItems).Methods("POST")
 }
 
 func (a *App) Run() {

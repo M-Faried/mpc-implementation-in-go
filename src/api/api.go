@@ -31,7 +31,7 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/", healthCheck).Methods("GET")
 
 	pc := ctrls.NewProductsController(a.DataSource)
-	pr := handlers.NewProductRouter(pc)
+	pr := handlers.NewProductsRoutesHandler(pc)
 	a.Router.HandleFunc("/products", pr.GetAllProducts).Methods("GET")
 	a.Router.HandleFunc("/products/{id}", pr.GetSingleProduct).Methods("GET")
 	a.Router.HandleFunc("/products", pr.CreateNewProduct).Methods("POST")

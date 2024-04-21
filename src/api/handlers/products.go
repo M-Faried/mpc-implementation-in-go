@@ -11,23 +11,23 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type IProductController interface {
+type IProductsController interface {
 	GetProducts() ([]models.Product, error)
 	GetSingleProduct(int) (*models.Product, error)
 	CreateProduct(*models.Product) error
 }
 
-type ProductRouter struct {
-	ctrl IProductController
+type ProductsRoutesHandler struct {
+	ctrl IProductsController
 }
 
-func NewProductRouter(controller IProductController) *ProductRouter {
-	return &ProductRouter{
+func NewProductsRoutesHandler(controller IProductsController) *ProductsRoutesHandler {
+	return &ProductsRoutesHandler{
 		ctrl: controller,
 	}
 }
 
-func (pr *ProductRouter) GetAllProducts(res http.ResponseWriter, req *http.Request) {
+func (pr *ProductsRoutesHandler) GetAllProducts(res http.ResponseWriter, req *http.Request) {
 	products, err := pr.ctrl.GetProducts()
 	if err != nil {
 		fmt.Printf("GetAllProducts err: %s\n", err.Error())
@@ -37,7 +37,7 @@ func (pr *ProductRouter) GetAllProducts(res http.ResponseWriter, req *http.Reque
 	respondWithJSON(res, http.StatusOK, products)
 }
 
-func (pr *ProductRouter) GetSingleProduct(res http.ResponseWriter, req *http.Request) {
+func (pr *ProductsRoutesHandler) GetSingleProduct(res http.ResponseWriter, req *http.Request) {
 
 	// Parsing the submitted id.
 	vars := mux.Vars(req)
@@ -58,7 +58,7 @@ func (pr *ProductRouter) GetSingleProduct(res http.ResponseWriter, req *http.Req
 	respondWithJSON(res, http.StatusOK, p)
 }
 
-func (pr *ProductRouter) CreateNewProduct(res http.ResponseWriter, req *http.Request) {
+func (pr *ProductsRoutesHandler) CreateNewProduct(res http.ResponseWriter, req *http.Request) {
 	reqBody, _ := io.ReadAll(req.Body)
 	var p models.Product
 	json.Unmarshal(reqBody, &p)

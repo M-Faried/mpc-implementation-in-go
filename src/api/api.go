@@ -19,7 +19,7 @@ type App struct {
 }
 
 func (a *App) Initialize() {
-
+	// Config validations
 	if a.DBPath == "" || a.Port == "" {
 		panic("App configuration is missing")
 	}

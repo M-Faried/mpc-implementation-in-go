@@ -31,13 +31,13 @@ func NewOrdersRouter(router *mux.Router, controller IOrdersController) IRouter {
 }
 
 func (or *ordersRouter) InitRoutes() {
-	or.router.HandleFunc("/orders", or.getAllOrders).Methods("GET")
-	or.router.HandleFunc("/orders/{id}", or.getSingleOrder).Methods("GET")
-	or.router.HandleFunc("/orders", or.createNewOrder).Methods("POST")
-	or.router.HandleFunc("/orderitems", or.createNewOrderItems).Methods("POST")
+	or.router.HandleFunc("/orders", or.getAllOrdersHandler).Methods("GET")
+	or.router.HandleFunc("/orders/{id}", or.getSingleOrderHandler).Methods("GET")
+	or.router.HandleFunc("/orders", or.createNewOrderHandler).Methods("POST")
+	or.router.HandleFunc("/orderitems", or.createNewOrderItemsHandler).Methods("POST")
 }
 
-func (or *ordersRouter) getAllOrders(res http.ResponseWriter, req *http.Request) {
+func (or *ordersRouter) getAllOrdersHandler(res http.ResponseWriter, req *http.Request) {
 	orders, err := or.ctrl.GetAllOrders()
 	if err != nil {
 		fmt.Printf("GetAllOrders err: %s\n", err.Error())
@@ -47,7 +47,7 @@ func (or *ordersRouter) getAllOrders(res http.ResponseWriter, req *http.Request)
 	respondWithJSON(res, http.StatusOK, orders)
 }
 
-func (or *ordersRouter) getSingleOrder(res http.ResponseWriter, req *http.Request) {
+func (or *ordersRouter) getSingleOrderHandler(res http.ResponseWriter, req *http.Request) {
 	// Parsing the submitted id.
 	vars := mux.Vars(req)
 	id := vars["id"]
@@ -68,7 +68,7 @@ func (or *ordersRouter) getSingleOrder(res http.ResponseWriter, req *http.Reques
 	respondWithJSON(res, http.StatusOK, o)
 }
 
-func (or *ordersRouter) createNewOrder(res http.ResponseWriter, req *http.Request) {
+func (or *ordersRouter) createNewOrderHandler(res http.ResponseWriter, req *http.Request) {
 	reqBody, _ := io.ReadAll(req.Body)
 	var o models.Order
 	json.Unmarshal(reqBody, &o)
@@ -81,7 +81,7 @@ func (or *ordersRouter) createNewOrder(res http.ResponseWriter, req *http.Reques
 	respondWithJSON(res, http.StatusOK, o)
 }
 
-func (or *ordersRouter) createNewOrderItems(res http.ResponseWriter, req *http.Request) {
+func (or *ordersRouter) createNewOrderItemsHandler(res http.ResponseWriter, req *http.Request) {
 	reqBody, _ := io.ReadAll(req.Body)
 	var items []models.OrderItem
 	json.Unmarshal(reqBody, &items)

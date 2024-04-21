@@ -30,12 +30,12 @@ func NewProductsRouter(router *mux.Router, controller IProductsController) IRout
 }
 
 func (pr *productsRouter) InitRoutes() {
-	pr.router.HandleFunc("/products", pr.getAllProducts).Methods("GET")
-	pr.router.HandleFunc("/products/{id}", pr.getSingleProduct).Methods("GET")
-	pr.router.HandleFunc("/products", pr.createNewProduct).Methods("POST")
+	pr.router.HandleFunc("/products", pr.getAllProductsHandler).Methods("GET")
+	pr.router.HandleFunc("/products/{id}", pr.getSingleProductHandler).Methods("GET")
+	pr.router.HandleFunc("/products", pr.createNewProductHandler).Methods("POST")
 }
 
-func (pr *productsRouter) getAllProducts(res http.ResponseWriter, req *http.Request) {
+func (pr *productsRouter) getAllProductsHandler(res http.ResponseWriter, req *http.Request) {
 	products, err := pr.ctrl.GetProducts()
 	if err != nil {
 		fmt.Printf("GetAllProducts err: %s\n", err.Error())
@@ -45,7 +45,7 @@ func (pr *productsRouter) getAllProducts(res http.ResponseWriter, req *http.Requ
 	respondWithJSON(res, http.StatusOK, products)
 }
 
-func (pr *productsRouter) getSingleProduct(res http.ResponseWriter, req *http.Request) {
+func (pr *productsRouter) getSingleProductHandler(res http.ResponseWriter, req *http.Request) {
 
 	// Parsing the submitted id.
 	vars := mux.Vars(req)
@@ -66,7 +66,7 @@ func (pr *productsRouter) getSingleProduct(res http.ResponseWriter, req *http.Re
 	respondWithJSON(res, http.StatusOK, p)
 }
 
-func (pr *productsRouter) createNewProduct(res http.ResponseWriter, req *http.Request) {
+func (pr *productsRouter) createNewProductHandler(res http.ResponseWriter, req *http.Request) {
 	reqBody, _ := io.ReadAll(req.Body)
 	var p models.Product
 	json.Unmarshal(reqBody, &p)

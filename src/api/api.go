@@ -5,6 +5,7 @@ import (
 	"log"
 	ctrls "mofaried/api/controllers"
 	"mofaried/api/models"
+	"mofaried/api/routers"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -29,20 +30,18 @@ func (a *App) Initialize(dbPath string) {
 func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/", healthCheck).Methods("GET")
 
-	pc := ctrls.ProductsController{
-		DS: a.DataSource,
-	}
-	a.Router.HandleFunc("/products", pc.GetAllProducts).Methods("GET")
-	a.Router.HandleFunc("/products/{id}", pc.GetSingleProduct).Methods("GET")
-	a.Router.HandleFunc("/products", pc.CreateNewProduct).Methods("POST")
+	pc := ctrls.NewProductsController(a.DataSource)
+	pr := routers.NewProductRouter(pc)
+	a.Router.HandleFunc("/products", pr.GetAllProducts).Methods("GET")
+	a.Router.HandleFunc("/products/{id}", pr.GetSingleProduct).Methods("GET")
+	a.Router.HandleFunc("/products", pr.CreateNewProduct).Methods("POST")
 
-	oc := ctrls.OrdersController{
-		DS: a.DataSource,
-	}
-	a.Router.HandleFunc("/orders", oc.GetAllOrders).Methods("GET")
-	a.Router.HandleFunc("/orders/{id}", oc.GetSingleOrder).Methods("GET")
-	a.Router.HandleFunc("/orders", oc.CreateNewOrder).Methods("POST")
-	a.Router.HandleFunc("/orderitems", oc.CreateNewOrderItem).Methods("POST")
+	oc := ctrls.NewOrdersController(a.DataSource)
+	or := routers.NewOrdersRouter(oc)
+	a.Router.HandleFunc("/orders", or.GetAllOrders).Methods("GET")
+	a.Router.HandleFunc("/orders/{id}", or.GetSingleOrder).Methods("GET")
+	a.Router.HandleFunc("/orders", or.CreateNewOrder).Methods("POST")
+	a.Router.HandleFunc("/orderitems", or.CreateNewOrderItems).Methods("POST")
 }
 
 func (a *App) Run() {

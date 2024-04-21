@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 	ctrls "mofaried/api/controllers"
+	"mofaried/api/handlers"
 	"mofaried/api/models"
-	"mofaried/api/routers"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -31,13 +31,13 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/", healthCheck).Methods("GET")
 
 	pc := ctrls.NewProductsController(a.DataSource)
-	pr := routers.NewProductRouter(pc)
+	pr := handlers.NewProductRouter(pc)
 	a.Router.HandleFunc("/products", pr.GetAllProducts).Methods("GET")
 	a.Router.HandleFunc("/products/{id}", pr.GetSingleProduct).Methods("GET")
 	a.Router.HandleFunc("/products", pr.CreateNewProduct).Methods("POST")
 
 	oc := ctrls.NewOrdersController(a.DataSource)
-	or := routers.NewOrdersRouter(oc)
+	or := handlers.NewOrdersRouter(oc)
 	a.Router.HandleFunc("/orders", or.GetAllOrders).Methods("GET")
 	a.Router.HandleFunc("/orders/{id}", or.GetSingleOrder).Methods("GET")
 	a.Router.HandleFunc("/orders", or.CreateNewOrder).Methods("POST")

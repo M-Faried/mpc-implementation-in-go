@@ -12,7 +12,7 @@ import (
 )
 
 type IProductController interface {
-	GetProducts() (*[]models.Product, error)
+	GetProducts() ([]models.Product, error)
 	FindProductByID(int) (*models.Product, error)
 	CreateProduct(*models.Product) error
 }
@@ -49,10 +49,6 @@ func (pr *ProductRouter) GetSingleProduct(res http.ResponseWriter, req *http.Req
 		return
 	}
 
-	// Reading the corresponding product from the database.
-	// p := models.Product{
-	// 	ID: id,
-	// }
 	p, err := pr.ctrl.FindProductByID(id)
 	if err != nil {
 		fmt.Printf("GetSingleProduct err: %s\n", err.Error())

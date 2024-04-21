@@ -13,7 +13,6 @@ import (
 
 type IOrdersController interface {
 	GetAllOrders() ([]models.Order, error)
-	GetOrderItems(o *models.Order) ([]models.OrderItem, error)
 	GetOrderByID(int) (*models.Order, error)
 	CreateOrder(o *models.Order) error
 	AddOrderItems(items []models.OrderItem) error
@@ -70,27 +69,16 @@ func (or *OrdersRouter) CreateNewOrder(res http.ResponseWriter, req *http.Reques
 		respondWithError(res, http.StatusBadRequest, err.Error())
 		return
 	}
-
-	// for _, item := range o.Items {
-	// 	item.OrderID = o.ID
-	// 	err := or.ctrl.CreateOrderItem(&item)
-	// 	if err != nil {
-	// 		fmt.Printf("CreateNewOrder error: %s\n", err.Error())
-	// 		respondWithError(res, http.StatusBadRequest, err.Error())
-	// 		return
-	// 	}
-	// }
-
 	respondWithJSON(res, http.StatusOK, o)
 }
 
-func (or *OrdersRouter) AddOrderItems(res http.ResponseWriter, req *http.Request) {
+func (or *OrdersRouter) CreateNewOrderItems(res http.ResponseWriter, req *http.Request) {
 	reqBody, _ := io.ReadAll(req.Body)
 	var items []models.OrderItem
 	json.Unmarshal(reqBody, &items)
 	err := or.ctrl.AddOrderItems(items)
 	if err != nil {
-		fmt.Printf("AddOrderItems error: %s\n", err.Error())
+		fmt.Printf("CreateNewOrderItems error: %s\n", err.Error())
 		respondWithError(res, http.StatusBadRequest, err.Error())
 		return
 	}

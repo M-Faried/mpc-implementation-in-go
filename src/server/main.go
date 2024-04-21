@@ -6,8 +6,9 @@ import (
 
 func main() {
 	app := api.App{
-		Port: ":8000",
+		Port:   ":8000",
+		DBPath: "../../ecommerce.db",
 	}
-	app.Initialize("../../ecommerce.db")
+	app.Initialize()
 	app.Run()
 }

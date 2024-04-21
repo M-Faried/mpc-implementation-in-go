@@ -12,30 +12,36 @@ import (
 )
 
 type App struct {
-	DataSource *models.EcommerceDal
-	Router     *mux.Router
-	Port       string
+	Port     string
+	DBPath   string
+	database *models.EcommerceDal
+	router   *mux.Router
 }
 
-func (a *App) Initialize(dbPath string) {
+func (a *App) Initialize() {
+
+	if a.DBPath == "" || a.Port == "" {
+		panic("App configuration is missing")
+	}
+
 	// Creating & initializaing the datasource
 	var source models.EcommerceDal
-	source.Initialize(dbPath)
-	a.DataSource = &source
+	source.Initialize(a.DBPath)
+	a.database = &source
 	// Creating & initializaing the router
-	a.Router = mux.NewRouter()
+	a.router = mux.NewRouter()
 	a.initializeRoutes()
 }
 
 func (a *App) initializeRoutes() {
-	a.Router.HandleFunc("/", healthCheck).Methods("GET")
+	a.router.HandleFunc("/", healthCheck).Methods("GET")
 
-	pc := ctrls.NewProductsController(a.DataSource)
-	pr := routers.NewProductsRouter(a.Router, pc)
+	pc := ctrls.NewProductsController(a.database)
+	pr := routers.NewProductsRouter(a.router, pc)
 	pr.InitRoutes()
 
-	oc := ctrls.NewOrdersController(a.DataSource)
-	or := routers.NewOrdersRouter(a.Router, oc)
+	oc := ctrls.NewOrdersController(a.database)
+	or := routers.NewOrdersRouter(a.router, oc)
 	or.InitRoutes()
 }
 
@@ -43,7 +49,7 @@ func (a *App) Run() {
 	// You can do the following as well.
 	// http.Handle("/", a.router)
 	fmt.Println("Server started and listening on the port", a.Port)
-	log.Fatal(http.ListenAndServe(a.Port, a.Router))
+	log.Fatal(http.ListenAndServe(a.Port, a.router))
 }
 
 //////////////////// Helper Functions

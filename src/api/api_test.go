@@ -56,31 +56,31 @@ func TestMain(m *testing.M) {
 }
 
 func ensureTableExists() {
-	if _, err := a.DataSource.DB.Exec(tableProductCreationQuery); err != nil {
+	if _, err := a.database.DB.Exec(tableProductCreationQuery); err != nil {
 		log.Fatal(err)
 	}
 
-	if _, err := a.DataSource.DB.Exec(tableOrderCreationQuery); err != nil {
+	if _, err := a.database.DB.Exec(tableOrderCreationQuery); err != nil {
 		log.Fatal(err)
 	}
 
-	if _, err := a.DataSource.DB.Exec(tableOrderItemCreationQuery); err != nil {
+	if _, err := a.database.DB.Exec(tableOrderItemCreationQuery); err != nil {
 		log.Fatal(err)
 	}
 }
 
 func clearProductTable() {
-	a.DataSource.DB.Exec("DELETE FROM products")
-	a.DataSource.DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'products'")
+	a.database.DB.Exec("DELETE FROM products")
+	a.database.DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'products'")
 }
 
 func clearOrderTable() {
-	a.DataSource.DB.Exec("DELETE FROM orders")
-	a.DataSource.DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'orders'")
+	a.database.DB.Exec("DELETE FROM orders")
+	a.database.DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'orders'")
 }
 
 func clearOrderItemTable() {
-	a.DataSource.DB.Exec("DELETE FROM order_items")
+	a.database.DB.Exec("DELETE FROM order_items")
 }
 
 func TestGetNonExistentProduct(t *testing.T) {
@@ -153,7 +153,7 @@ func addProducts(count int) {
 	}
 
 	for i := 0; i < count; i++ {
-		a.DataSource.DB.Exec("INSERT INTO products(productCode, name, inventory, price, status) VALUES(?,?,?,?,?)", "ABC123"+strconv.Itoa(i), "Product"+strconv.Itoa(i), i, i, "test"+strconv.Itoa(i))
+		a.database.DB.Exec("INSERT INTO products(productCode, name, inventory, price, status) VALUES(?,?,?,?,?)", "ABC123"+strconv.Itoa(i), "Product"+strconv.Itoa(i), i, i, "test"+strconv.Itoa(i))
 	}
 }
 
@@ -218,7 +218,7 @@ func addOrders(count int) {
 	}
 
 	for i := 0; i < count; i++ {
-		a.DataSource.DB.Exec("INSERT INTO orders(customerName, total, status) VALUES(?,?,?)", "Customer"+strconv.Itoa(i), i, "test"+strconv.Itoa(i))
+		a.database.DB.Exec("INSERT INTO orders(customerName, total, status) VALUES(?,?,?)", "Customer"+strconv.Itoa(i), i, "test"+strconv.Itoa(i))
 	}
 }
 
@@ -253,7 +253,7 @@ func TestCreateOrderItem(t *testing.T) {
 
 func executeRequest(req *http.Request) *httptest.ResponseRecorder {
 	rr := httptest.NewRecorder()
-	a.Router.ServeHTTP(rr, req)
+	a.router.ServeHTTP(rr, req)
 
 	return rr
 }

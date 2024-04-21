@@ -23,7 +23,7 @@ type OrdersRouter struct {
 	router *mux.Router
 }
 
-func NewOrdersRouter(router *mux.Router, controller IOrdersController) *OrdersRouter {
+func NewOrdersRouter(router *mux.Router, controller IOrdersController) IRouter {
 	return &OrdersRouter{
 		ctrl:   controller,
 		router: router,

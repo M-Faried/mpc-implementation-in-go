@@ -1,14 +1,7 @@
 package controllers
 
 import (
-	"encoding/json"
-	"fmt"
-	"io"
 	"mofaried/api/models"
-	"net/http"
-	"strconv"
-
-	"github.com/gorilla/mux"
 )
 
 type IOrdersDataSource interface {
@@ -29,75 +22,44 @@ func NewOrdersController(dataSource IOrdersDataSource) *OrdersController {
 	}
 }
 
-func (c *OrdersController) GetAllOrders(res http.ResponseWriter, req *http.Request) {
+func (c *OrdersController) GetAllOrders() ([]models.Order, error) {
 	orders, err := c.ds.GetAllOrders()
-	if err != nil {
-		fmt.Printf("GetAllOrders err: %s\n", err.Error())
-		respondWithError(res, http.StatusInternalServerError, err.Error())
-		return
-	}
-	respondWithJSON(res, http.StatusOK, orders)
+	return orders, err
 }
 
-func (c *OrdersController) GetSingleOrder(res http.ResponseWriter, req *http.Request) {
-	// Parsing the submitted id.
-	vars := mux.Vars(req)
-	id := vars["id"]
-	intID, err := strconv.Atoi(id)
-	if err != nil {
-		fmt.Printf("GetSingleOrder invalid order ID: %s\n", err.Error())
-		respondWithError(res, http.StatusBadRequest, "Invalid Order ID")
-		return
-	}
-
+func (c *OrdersController) GetOrderByID(id int) (*models.Order, error) {
 	// Reading the corresponding order from the database.
 	var o models.Order
-	o.ID = intID
-	err = c.ds.GetOrderByID(&o)
-	if err != nil {
-		fmt.Printf("GetSingleOrder err: %s\n", err.Error())
-		respondWithError(res, http.StatusNotFound, "Order ID Is Not Found")
-		return
-	}
-	respondWithJSON(res, http.StatusOK, o)
+	o.ID = id
+	err := c.ds.GetOrderByID(&o)
+	return &o, err
 }
 
-func (c *OrdersController) CreateNewOrder(res http.ResponseWriter, req *http.Request) {
-	reqBody, _ := io.ReadAll(req.Body)
-	var o models.Order
-	json.Unmarshal(reqBody, &o)
-	err := c.ds.CreateOrder(&o)
+func (c *OrdersController) CreateOrder(o *models.Order) error {
+	// Creating the order.
+	err := c.ds.CreateOrder(o)
 	if err != nil {
-		fmt.Printf("CreateNewOrder error: %s\n", err.Error())
-		respondWithError(res, http.StatusBadRequest, err.Error())
-		return
+		return err
 	}
 
+	// Creating the order items.
 	for _, item := range o.Items {
 		item.OrderID = o.ID
 		err := c.ds.CreateOrderItem(&item)
 		if err != nil {
-			fmt.Printf("CreateNewOrder error: %s\n", err.Error())
-			respondWithError(res, http.StatusBadRequest, err.Error())
-			return
+			return err
 		}
 	}
 
-	respondWithJSON(res, http.StatusOK, o)
+	return nil
 }
 
-func (c *OrdersController) CreateNewOrderItem(res http.ResponseWriter, req *http.Request) {
-	reqBody, _ := io.ReadAll(req.Body)
-	var items []models.OrderItem
-	json.Unmarshal(reqBody, &items)
+func (c *OrdersController) AddOrderItems(items []models.OrderItem) error {
 	for _, item := range items {
 		err := c.ds.CreateOrderItem(&item)
 		if err != nil {
-			fmt.Printf("CreateNewOrderItem error: %s\n", err.Error())
-			respondWithError(res, http.StatusBadRequest, err.Error())
-			return
+			return err
 		}
 	}
-
-	respondWithJSON(res, http.StatusOK, items)
+	return nil
 }

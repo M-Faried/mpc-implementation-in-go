@@ -28,6 +28,7 @@ func (a *App) Initialize() {
 	var source models.EcommerceDal
 	source.Initialize(a.DBPath)
 	a.database = &source
+
 	// Creating & initializaing the router
 	a.router = mux.NewRouter()
 	a.initializeRoutes()

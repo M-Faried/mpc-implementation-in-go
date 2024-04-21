@@ -29,16 +29,12 @@ func (a *App) Initialize(dbPath string) {
 func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/", healthCheck).Methods("GET")
 
-	pc := ctrls.ProductsController{
-		DS: a.DataSource,
-	}
+	pc := ctrls.NewProductsController(a.DataSource)
 	a.Router.HandleFunc("/products", pc.GetAllProducts).Methods("GET")
 	a.Router.HandleFunc("/products/{id}", pc.GetSingleProduct).Methods("GET")
 	a.Router.HandleFunc("/products", pc.CreateNewProduct).Methods("POST")
 
-	oc := ctrls.OrdersController{
-		DS: a.DataSource,
-	}
+	oc := ctrls.NewOrdersController(a.DataSource)
 	a.Router.HandleFunc("/orders", oc.GetAllOrders).Methods("GET")
 	a.Router.HandleFunc("/orders/{id}", oc.GetSingleOrder).Methods("GET")
 	a.Router.HandleFunc("/orders", oc.CreateNewOrder).Methods("POST")

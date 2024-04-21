@@ -20,11 +20,17 @@ type IOrdersDataSource interface {
 }
 
 type OrdersController struct {
-	DS IOrdersDataSource
+	ds IOrdersDataSource
+}
+
+func NewOrdersController(dataSource IOrdersDataSource) *OrdersController {
+	return &OrdersController{
+		ds: dataSource,
+	}
 }
 
 func (c *OrdersController) GetAllOrders(res http.ResponseWriter, req *http.Request) {
-	orders, err := c.DS.GetAllOrders()
+	orders, err := c.ds.GetAllOrders()
 	if err != nil {
 		fmt.Printf("GetAllOrders err: %s\n", err.Error())
 		respondWithError(res, http.StatusInternalServerError, err.Error())
@@ -47,7 +53,7 @@ func (c *OrdersController) GetSingleOrder(res http.ResponseWriter, req *http.Req
 	// Reading the corresponding order from the database.
 	var o models.Order
 	o.ID = intID
-	err = c.DS.GetOrderByID(&o)
+	err = c.ds.GetOrderByID(&o)
 	if err != nil {
 		fmt.Printf("GetSingleOrder err: %s\n", err.Error())
 		respondWithError(res, http.StatusNotFound, "Order ID Is Not Found")
@@ -60,7 +66,7 @@ func (c *OrdersController) CreateNewOrder(res http.ResponseWriter, req *http.Req
 	reqBody, _ := io.ReadAll(req.Body)
 	var o models.Order
 	json.Unmarshal(reqBody, &o)
-	err := c.DS.CreateOrder(&o)
+	err := c.ds.CreateOrder(&o)
 	if err != nil {
 		fmt.Printf("CreateNewOrder error: %s\n", err.Error())
 		respondWithError(res, http.StatusBadRequest, err.Error())
@@ -69,7 +75,7 @@ func (c *OrdersController) CreateNewOrder(res http.ResponseWriter, req *http.Req
 
 	for _, item := range o.Items {
 		item.OrderID = o.ID
-		err := c.DS.CreateOrderItem(&item)
+		err := c.ds.CreateOrderItem(&item)
 		if err != nil {
 			fmt.Printf("CreateNewOrder error: %s\n", err.Error())
 			respondWithError(res, http.StatusBadRequest, err.Error())
@@ -85,7 +91,7 @@ func (c *OrdersController) CreateNewOrderItem(res http.ResponseWriter, req *http
 	var items []models.OrderItem
 	json.Unmarshal(reqBody, &items)
 	for _, item := range items {
-		err := c.DS.CreateOrderItem(&item)
+		err := c.ds.CreateOrderItem(&item)
 		if err != nil {
 			fmt.Printf("CreateNewOrderItem error: %s\n", err.Error())
 			respondWithError(res, http.StatusBadRequest, err.Error())

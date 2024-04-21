@@ -18,11 +18,17 @@ type IProductsDataSource interface {
 }
 
 type ProductsController struct {
-	DS IProductsDataSource
+	ds IProductsDataSource
+}
+
+func NewProductsController(dataSource IProductsDataSource) *ProductsController {
+	return &ProductsController{
+		ds: dataSource,
+	}
 }
 
 func (c *ProductsController) GetAllProducts(res http.ResponseWriter, req *http.Request) {
-	products, err := c.DS.GetProducts()
+	products, err := c.ds.GetProducts()
 	if err != nil {
 		fmt.Printf("GetAllProducts err: %s\n", err.Error())
 		respondWithError(res, http.StatusInternalServerError, err.Error())
@@ -47,7 +53,7 @@ func (c *ProductsController) GetSingleProduct(res http.ResponseWriter, req *http
 	p := models.Product{
 		ID: id,
 	}
-	err = c.DS.FindProductByID(&p)
+	err = c.ds.FindProductByID(&p)
 	if err != nil {
 		fmt.Printf("GetSingleProduct err: %s\n", err.Error())
 		respondWithError(res, http.StatusNotFound, "Product ID Is Not Found")
@@ -60,7 +66,7 @@ func (c *ProductsController) CreateNewProduct(res http.ResponseWriter, req *http
 	reqBody, _ := io.ReadAll(req.Body)
 	var p models.Product
 	json.Unmarshal(reqBody, &p)
-	err := c.DS.CreateProduct(&p)
+	err := c.ds.CreateProduct(&p)
 
 	if err != nil {
 		fmt.Printf("CreateNewProduct error: %s\n", err.Error())

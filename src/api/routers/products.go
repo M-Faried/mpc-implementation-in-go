@@ -22,10 +22,10 @@ type productsRouter struct {
 	router *mux.Router
 }
 
-func NewProductsRouter(router *mux.Router, controller IProductsController) IRouter {
+func NewProductsRouter(baseRouter *mux.Router, controller IProductsController) IRouter {
 	return &productsRouter{
 		ctrl:   controller,
-		router: router,
+		router: baseRouter,
 	}
 }
 

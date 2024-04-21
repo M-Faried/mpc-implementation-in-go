@@ -33,6 +33,13 @@ func (a *App) Initialize() {
 	a.initializeRoutes()
 }
 
+func (a *App) Run() {
+	// You can do the following as well.
+	// http.Handle("/", a.router)
+	fmt.Println("Server started and listening on the port", a.Port)
+	log.Fatal(http.ListenAndServe(a.Port, a.router))
+}
+
 func (a *App) initializeRoutes() {
 	a.router.HandleFunc("/", healthCheck).Methods("GET")
 
@@ -43,13 +50,6 @@ func (a *App) initializeRoutes() {
 	oc := ctrls.NewOrdersController(a.database)
 	or := routers.NewOrdersRouter(a.router, oc)
 	or.InitRoutes()
-}
-
-func (a *App) Run() {
-	// You can do the following as well.
-	// http.Handle("/", a.router)
-	fmt.Println("Server started and listening on the port", a.Port)
-	log.Fatal(http.ListenAndServe(a.Port, a.router))
 }
 
 //////////////////// Helper Functions

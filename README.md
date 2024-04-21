@@ -2,8 +2,9 @@
 
 A practice application on using GO to build an E-Commerce REST API.
 
-- The api is built using the a data access layer and DTO's located in the models folder for the accessing the database
-- Also there are controllers for each app domain, Products & Orders to handle the logic of the api routes and depends on an interface for the data access layer.
+- **Models** The api is built using the a data access layer and DTO's located in the models folder for the accessing the database.
+- **Controllers** for coupling the routes to their data sources which are the same in this case.
+- **Routers** for handling the HTTP requests and responses.
 
 # To Run The App
 

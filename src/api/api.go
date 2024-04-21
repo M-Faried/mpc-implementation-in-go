@@ -3,7 +3,7 @@ package api
 import (
 	"fmt"
 	"log"
-	"mofaried/api/controllers"
+	ctrls "mofaried/api/controllers"
 	"mofaried/api/models"
 	"net/http"
 
@@ -29,14 +29,14 @@ func (a *App) Initialize(dbPath string) {
 func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/", healthCheck).Methods("GET")
 
-	pc := controllers.ProductsController{
+	pc := ctrls.ProductsController{
 		DS: a.DataSource,
 	}
 	a.Router.HandleFunc("/products", pc.GetAllProducts).Methods("GET")
 	a.Router.HandleFunc("/products/{id}", pc.GetSingleProduct).Methods("GET")
 	a.Router.HandleFunc("/products", pc.CreateNewProduct).Methods("POST")
 
-	oc := controllers.OrdersController{
+	oc := ctrls.OrdersController{
 		DS: a.DataSource,
 	}
 	a.Router.HandleFunc("/orders", oc.GetAllOrders).Methods("GET")

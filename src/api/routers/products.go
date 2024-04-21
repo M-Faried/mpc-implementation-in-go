@@ -1,4 +1,4 @@
-package handlers
+package routers
 
 import (
 	"encoding/json"
@@ -17,17 +17,25 @@ type IProductsController interface {
 	CreateProduct(*models.Product) error
 }
 
-type ProductsRoutesHandler struct {
-	ctrl IProductsController
+type ProductsRouters struct {
+	ctrl   IProductsController
+	router *mux.Router
 }
 
-func NewProductsRoutesHandler(controller IProductsController) *ProductsRoutesHandler {
-	return &ProductsRoutesHandler{
-		ctrl: controller,
+func NewProductsRouter(router *mux.Router, controller IProductsController) *ProductsRouters {
+	return &ProductsRouters{
+		ctrl:   controller,
+		router: router,
 	}
 }
 
-func (pr *ProductsRoutesHandler) GetAllProducts(res http.ResponseWriter, req *http.Request) {
+func (pr *ProductsRouters) InitRoutes() {
+	pr.router.HandleFunc("/products", pr.GetAllProducts).Methods("GET")
+	pr.router.HandleFunc("/products/{id}", pr.GetSingleProduct).Methods("GET")
+	pr.router.HandleFunc("/products", pr.CreateNewProduct).Methods("POST")
+}
+
+func (pr *ProductsRouters) GetAllProducts(res http.ResponseWriter, req *http.Request) {
 	products, err := pr.ctrl.GetProducts()
 	if err != nil {
 		fmt.Printf("GetAllProducts err: %s\n", err.Error())
@@ -37,7 +45,7 @@ func (pr *ProductsRoutesHandler) GetAllProducts(res http.ResponseWriter, req *ht
 	respondWithJSON(res, http.StatusOK, products)
 }
 
-func (pr *ProductsRoutesHandler) GetSingleProduct(res http.ResponseWriter, req *http.Request) {
+func (pr *ProductsRouters) GetSingleProduct(res http.ResponseWriter, req *http.Request) {
 
 	// Parsing the submitted id.
 	vars := mux.Vars(req)
@@ -58,7 +66,7 @@ func (pr *ProductsRoutesHandler) GetSingleProduct(res http.ResponseWriter, req *
 	respondWithJSON(res, http.StatusOK, p)
 }
 
-func (pr *ProductsRoutesHandler) CreateNewProduct(res http.ResponseWriter, req *http.Request) {
+func (pr *ProductsRouters) CreateNewProduct(res http.ResponseWriter, req *http.Request) {
 	reqBody, _ := io.ReadAll(req.Body)
 	var p models.Product
 	json.Unmarshal(reqBody, &p)

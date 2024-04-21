@@ -1,4 +1,4 @@
-package handlers
+package routers
 
 import (
 	"encoding/json"
@@ -18,17 +18,26 @@ type IOrdersController interface {
 	AddOrderItems(items []models.OrderItem) error
 }
 
-type OrdersRoutesHandler struct {
-	ctrl IOrdersController
+type OrdersRouter struct {
+	ctrl   IOrdersController
+	router *mux.Router
 }
 
-func NewOrdersRoutesHandler(controller IOrdersController) *OrdersRoutesHandler {
-	return &OrdersRoutesHandler{
-		ctrl: controller,
+func NewOrdersRouter(router *mux.Router, controller IOrdersController) *OrdersRouter {
+	return &OrdersRouter{
+		ctrl:   controller,
+		router: router,
 	}
 }
 
-func (or *OrdersRoutesHandler) GetAllOrders(res http.ResponseWriter, req *http.Request) {
+func (or *OrdersRouter) InitRoutes() {
+	or.router.HandleFunc("/orders", or.GetAllOrders).Methods("GET")
+	or.router.HandleFunc("/orders/{id}", or.GetSingleOrder).Methods("GET")
+	or.router.HandleFunc("/orders", or.CreateNewOrder).Methods("POST")
+	or.router.HandleFunc("/orderitems", or.CreateNewOrderItems).Methods("POST")
+}
+
+func (or *OrdersRouter) GetAllOrders(res http.ResponseWriter, req *http.Request) {
 	orders, err := or.ctrl.GetAllOrders()
 	if err != nil {
 		fmt.Printf("GetAllOrders err: %s\n", err.Error())
@@ -38,7 +47,7 @@ func (or *OrdersRoutesHandler) GetAllOrders(res http.ResponseWriter, req *http.R
 	respondWithJSON(res, http.StatusOK, orders)
 }
 
-func (or *OrdersRoutesHandler) GetSingleOrder(res http.ResponseWriter, req *http.Request) {
+func (or *OrdersRouter) GetSingleOrder(res http.ResponseWriter, req *http.Request) {
 	// Parsing the submitted id.
 	vars := mux.Vars(req)
 	id := vars["id"]
@@ -59,7 +68,7 @@ func (or *OrdersRoutesHandler) GetSingleOrder(res http.ResponseWriter, req *http
 	respondWithJSON(res, http.StatusOK, o)
 }
 
-func (or *OrdersRoutesHandler) CreateNewOrder(res http.ResponseWriter, req *http.Request) {
+func (or *OrdersRouter) CreateNewOrder(res http.ResponseWriter, req *http.Request) {
 	reqBody, _ := io.ReadAll(req.Body)
 	var o models.Order
 	json.Unmarshal(reqBody, &o)
@@ -72,7 +81,7 @@ func (or *OrdersRoutesHandler) CreateNewOrder(res http.ResponseWriter, req *http
 	respondWithJSON(res, http.StatusOK, o)
 }
 
-func (or *OrdersRoutesHandler) CreateNewOrderItems(res http.ResponseWriter, req *http.Request) {
+func (or *OrdersRouter) CreateNewOrderItems(res http.ResponseWriter, req *http.Request) {
 	reqBody, _ := io.ReadAll(req.Body)
 	var items []models.OrderItem
 	json.Unmarshal(reqBody, &items)

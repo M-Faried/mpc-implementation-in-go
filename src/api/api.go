@@ -5,7 +5,7 @@ import (
 	"log"
 	ctrls "mofaried/api/controllers"
 	"mofaried/api/models"
-	"mofaried/api/routers"
+	httpRouters "mofaried/api/routers/http"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -30,8 +30,7 @@ func (a *App) Initialize() {
 	a.database = &source
 
 	// Creating & initializaing the router
-	a.router = mux.NewRouter()
-	a.initializeRoutes()
+	a.initHttpRouter()
 }
 
 func (a *App) Run() {
@@ -41,16 +40,21 @@ func (a *App) Run() {
 	log.Fatal(http.ListenAndServe(a.Port, a.router))
 }
 
-func (a *App) initializeRoutes() {
-	a.router.HandleFunc("/", healthCheck).Methods("GET")
+func (a *App) initHttpRouter() {
+
+	router := mux.NewRouter()
+
+	router.HandleFunc("/", healthCheck).Methods("GET")
 
 	pc := ctrls.NewProductsController(a.database)
-	pr := routers.NewProductsRouter(a.router, pc)
+	pr := httpRouters.NewProductsRouter(router, pc)
 	pr.InitRoutes()
 
 	oc := ctrls.NewOrdersController(a.database)
-	or := routers.NewOrdersRouter(a.router, oc)
+	or := httpRouters.NewOrdersRouter(router, oc)
 	or.InitRoutes()
+
+	a.router = router
 }
 
 //////////////////// Helper Functions

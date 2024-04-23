@@ -6,9 +6,9 @@ An E-Commerce microservice supporting both HTTP and gRPC communication protocols
     <img src='./readme/arch.png' alt='portfolio preview' width="500"/>
 </p>
 
-- **Presentations** Containing the implementation of both HTTP & gRPC protocols.
-- **Controllers** for coupling the routes to their data sources which are the same in this case.
-- **Models** The api is built using the a data access layer and DTO's located in the models folder for the accessing the database.
+- **Presentations** _(src/api/presentations)_ Containing the implementation of both HTTP & gRPC protocols.
+- **Controllers** _(src/api/controllers)_ for coupling the routes to their data sources which are the same in this case.
+- **Models** _(src/api/models)_ The api is built using the a data access layer and DTO's located in the models folder for the accessing the database.
 
 ### To Run The App
 

@@ -7,12 +7,19 @@ import (
 	"github.com/m-faried/api/models"
 )
 
+// IProductsController is the requried interface for the product controller.
+// It contains the methods used by the GrpcEcommerceServer
 type IProductsController interface {
 	GetProducts() ([]models.Product, error)
 }
 
+// IOrdersController is the requried interface for the order controller
+// It contains the methods used by the GrpcEcommerceServer
 type IOrdersController interface{}
 
+// GrpcEcommerceServer is the server structure for the gRPC.
+// The structure is implementing ECommerceServer interface in
+// the generated gRPC go files.
 type GrpcEcommerceServer struct {
 	UnimplementedECommerceServer
 	prodCtrl  IProductsController
@@ -34,8 +41,8 @@ func (s *GrpcEcommerceServer) GetProducts(context.Context, *GetProductsRequest) 
 		return nil, err
 	}
 
-	rpcProducts := make([]*Product, 0)
-
+	// Converting models.Product to rpc.Product
+	var rpcProducts []*Product
 	for _, prod := range products {
 		rpcProducts = append(rpcProducts, &Product{
 			ID:          int32(prod.ID),

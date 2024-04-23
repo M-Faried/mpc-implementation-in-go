@@ -61,6 +61,8 @@ func (a *App) RunGrpc() {
 	fmt.Println("The error", err)
 }
 
+//////////////////// Helper Functions
+
 func (a *App) initHttpRouter() {
 
 	router := mux.NewRouter()
@@ -84,8 +86,6 @@ func (a *App) initGrpc() {
 	ps := rpc.NewGrpcEcommerceServer(pc, oc)
 	a.grpcServer = ps
 }
-
-//////////////////// Helper Functions
 
 func healthCheck(res http.ResponseWriter, req *http.Request) {
 	fmt.Fprintf(res, "Hello World")

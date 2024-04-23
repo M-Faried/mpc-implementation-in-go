@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	ECommerce_GetProducts_FullMethodName = "/ECommerce/GetProducts"
+	ECommerce_GetProducts_FullMethodName      = "/ECommerce/GetProducts"
+	ECommerce_GetSingleProduct_FullMethodName = "/ECommerce/GetSingleProduct"
 )
 
 // ECommerceClient is the client API for ECommerce service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ECommerceClient interface {
 	GetProducts(ctx context.Context, in *GetProductsRequest, opts ...grpc.CallOption) (*GetProductsResponse, error)
+	GetSingleProduct(ctx context.Context, in *GetSignleProductRequest, opts ...grpc.CallOption) (*GetSingleProductResponse, error)
 }
 
 type eCommerceClient struct {
@@ -46,11 +48,21 @@ func (c *eCommerceClient) GetProducts(ctx context.Context, in *GetProductsReques
 	return out, nil
 }
 
+func (c *eCommerceClient) GetSingleProduct(ctx context.Context, in *GetSignleProductRequest, opts ...grpc.CallOption) (*GetSingleProductResponse, error) {
+	out := new(GetSingleProductResponse)
+	err := c.cc.Invoke(ctx, ECommerce_GetSingleProduct_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ECommerceServer is the server API for ECommerce service.
 // All implementations must embed UnimplementedECommerceServer
 // for forward compatibility
 type ECommerceServer interface {
 	GetProducts(context.Context, *GetProductsRequest) (*GetProductsResponse, error)
+	GetSingleProduct(context.Context, *GetSignleProductRequest) (*GetSingleProductResponse, error)
 	mustEmbedUnimplementedECommerceServer()
 }
 
@@ -60,6 +72,9 @@ type UnimplementedECommerceServer struct {
 
 func (UnimplementedECommerceServer) GetProducts(context.Context, *GetProductsRequest) (*GetProductsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProducts not implemented")
+}
+func (UnimplementedECommerceServer) GetSingleProduct(context.Context, *GetSignleProductRequest) (*GetSingleProductResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSingleProduct not implemented")
 }
 func (UnimplementedECommerceServer) mustEmbedUnimplementedECommerceServer() {}
 
@@ -92,6 +107,24 @@ func _ECommerce_GetProducts_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ECommerce_GetSingleProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSignleProductRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ECommerceServer).GetSingleProduct(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ECommerce_GetSingleProduct_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ECommerceServer).GetSingleProduct(ctx, req.(*GetSignleProductRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ECommerce_ServiceDesc is the grpc.ServiceDesc for ECommerce service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -102,6 +135,10 @@ var ECommerce_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetProducts",
 			Handler:    _ECommerce_GetProducts_Handler,
+		},
+		{
+			MethodName: "GetSingleProduct",
+			Handler:    _ECommerce_GetSingleProduct_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

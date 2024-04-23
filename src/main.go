@@ -8,7 +8,7 @@ func main() {
 	app := api.App{
 		Port:     ":8000",
 		PortGrpc: ":3000",
-		DBPath:   "../../database/ecommerce.db",
+		DBPath:   "../database/ecommerce.db",
 	}
 
 	app.Initialize()

@@ -4,7 +4,11 @@ go 1.22.2
 
 replace github.com/m-faried/api => ./api
 
+replace github.com/m-faried/types => ./types
+
 require github.com/m-faried/api v0.0.0-00010101000000-000000000000
+
+require github.com/m-faried/types v0.0.0-00010101000000-000000000000 // indirect
 
 require (
 	github.com/gorilla/mux v1.8.1 // indirect

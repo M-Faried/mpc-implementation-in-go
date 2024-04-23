@@ -1,6 +1,6 @@
 # Go Simple Rest API
 
-A practice application on using GO to build an E-Commerce REST API.
+A practice application on using GO to build an E-Commerce microservice.
 
 - **Models** The api is built using the a data access layer and DTO's located in the models folder for the accessing the database.
 - **Controllers** for coupling the routes to their data sources which are the same in this case.

@@ -5,6 +5,7 @@ import (
 	"log"
 	"sync"
 
+	t "github.com/m-faried/types"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -26,14 +27,14 @@ func (c *EcommerceDal) Initialize(dbPath string) {
 
 // Product Actions
 
-func (c EcommerceDal) GetProducts() ([]Product, error) {
+func (c EcommerceDal) GetProducts() ([]t.Product, error) {
 	rows, err := c.DB.Query("SELECT * FROM products")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	products := []Product{}
-	var p Product
+	products := []t.Product{}
+	var p t.Product
 
 	for rows.Next() {
 		err := rows.Scan(&p.ID, &p.ProductCode, &p.Name, &p.Inventory, &p.Price, &p.Status)
@@ -47,7 +48,7 @@ func (c EcommerceDal) GetProducts() ([]Product, error) {
 	return products, nil
 }
 
-func (c EcommerceDal) FindProductByID(p *Product) error {
+func (c EcommerceDal) FindProductByID(p *t.Product) error {
 	query := `
 		SELECT productCode, name, inventory, price, status 
 		FROM products 
@@ -59,7 +60,7 @@ func (c EcommerceDal) FindProductByID(p *Product) error {
 	return err
 }
 
-func (c EcommerceDal) CreateProduct(p *Product) error {
+func (c EcommerceDal) CreateProduct(p *t.Product) error {
 	query := `
 		INSERT INTO products(productCode, name, inventory, price, status) 
 		VALUES(?, ?, ?, ?, ?)
@@ -78,16 +79,16 @@ func (c EcommerceDal) CreateProduct(p *Product) error {
 
 // Order Actions
 
-func (c EcommerceDal) GetAllOrders() ([]Order, error) {
+func (c EcommerceDal) GetAllOrders() ([]t.Order, error) {
 	rows, err := c.DB.Query("SELECT * FROM orders")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	orders := []Order{}
+	orders := []t.Order{}
 	for rows.Next() {
-		var o Order
+		var o t.Order
 		err := rows.Scan(&o.ID, &o.CustomerName, &o.Total, &o.Status)
 		if err != nil {
 			return orders, err
@@ -103,7 +104,7 @@ func (c EcommerceDal) GetAllOrders() ([]Order, error) {
 	return orders, nil
 }
 
-func (c EcommerceDal) GetOrderItems(o *Order) error {
+func (c EcommerceDal) GetOrderItems(o *t.Order) error {
 	query := `
 		SELECT * 
 		FROM order_items
@@ -114,9 +115,9 @@ func (c EcommerceDal) GetOrderItems(o *Order) error {
 		return err
 	}
 	defer rows.Close()
-	var orderItems []OrderItem
+	var orderItems []t.OrderItem
 	for rows.Next() {
-		var item OrderItem
+		var item t.OrderItem
 		err := rows.Scan(&item.OrderID, &item.ProductID, &item.Quantity)
 		if err != nil {
 			return err
@@ -128,7 +129,7 @@ func (c EcommerceDal) GetOrderItems(o *Order) error {
 	return nil
 }
 
-func (c EcommerceDal) GetOrderByID(o *Order) error {
+func (c EcommerceDal) GetOrderByID(o *t.Order) error {
 	query := `
 		SELECT customerName, total, status
 		FROM orders
@@ -146,7 +147,7 @@ func (c EcommerceDal) GetOrderByID(o *Order) error {
 	return nil
 }
 
-func (c EcommerceDal) CreateOrder(o *Order) error {
+func (c EcommerceDal) CreateOrder(o *t.Order) error {
 	query := `
 		INSERT INTO orders(customerName, total, status) 
 		VALUES(?, ?, ?)
@@ -163,7 +164,7 @@ func (c EcommerceDal) CreateOrder(o *Order) error {
 	return nil
 }
 
-func (c EcommerceDal) CreateOrderItem(item *OrderItem) error {
+func (c EcommerceDal) CreateOrderItem(item *t.OrderItem) error {
 	query := `
 		INSERT INTO order_items(order_id, product_id, quantity) 
 		VALUES(?, ?, ?)

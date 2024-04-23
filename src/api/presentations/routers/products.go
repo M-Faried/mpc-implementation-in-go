@@ -4,17 +4,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"mofaried/api/models"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
+	t "github.com/m-faried/types"
 )
 
 type IProductsController interface {
-	GetProducts() ([]models.Product, error)
-	GetSingleProduct(int) (*models.Product, error)
-	CreateProduct(*models.Product) error
+	GetProducts() ([]t.Product, error)
+	GetSingleProduct(int) (*t.Product, error)
+	CreateProduct(*t.Product) error
 }
 
 type productsRouter struct {
@@ -68,7 +68,7 @@ func (pr *productsRouter) getSingleProductHandler(res http.ResponseWriter, req *
 
 func (pr *productsRouter) createNewProductHandler(res http.ResponseWriter, req *http.Request) {
 	reqBody, _ := io.ReadAll(req.Body)
-	var p models.Product
+	var p t.Product
 	json.Unmarshal(reqBody, &p)
 	err := pr.ctrl.CreateProduct(&p)
 

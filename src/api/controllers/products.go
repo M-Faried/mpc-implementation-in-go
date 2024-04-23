@@ -1,13 +1,13 @@
 package controllers
 
 import (
-	"mofaried/api/models"
+	t "github.com/m-faried/types"
 )
 
 type IProductsDataSource interface {
-	GetProducts() ([]models.Product, error)
-	FindProductByID(p *models.Product) error
-	CreateProduct(p *models.Product) error
+	GetProducts() ([]t.Product, error)
+	FindProductByID(p *t.Product) error
+	CreateProduct(p *t.Product) error
 }
 
 type ProductsController struct {
@@ -20,21 +20,21 @@ func NewProductsController(dataSource IProductsDataSource) *ProductsController {
 	}
 }
 
-func (c *ProductsController) GetProducts() ([]models.Product, error) {
+func (c *ProductsController) GetProducts() ([]t.Product, error) {
 	products, err := c.ds.GetProducts()
 	return products, err
 }
 
-func (c *ProductsController) GetSingleProduct(id int) (*models.Product, error) {
+func (c *ProductsController) GetSingleProduct(id int) (*t.Product, error) {
 	// Reading the corresponding product from the database.
-	p := models.Product{
+	p := t.Product{
 		ID: id,
 	}
 	err := c.ds.FindProductByID(&p)
 	return &p, err
 }
 
-func (c *ProductsController) CreateProduct(p *models.Product) error {
+func (c *ProductsController) CreateProduct(p *t.Product) error {
 	err := c.ds.CreateProduct(p)
 	return err
 }

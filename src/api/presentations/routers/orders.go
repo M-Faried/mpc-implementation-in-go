@@ -4,18 +4,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"mofaried/api/models"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
+	t "github.com/m-faried/types"
 )
 
 type IOrdersController interface {
-	GetAllOrders() ([]models.Order, error)
-	GetOrderByID(int) (*models.Order, error)
-	CreateOrder(o *models.Order) error
-	AddOrderItems(items []models.OrderItem) error
+	GetAllOrders() ([]t.Order, error)
+	GetOrderByID(int) (*t.Order, error)
+	CreateOrder(o *t.Order) error
+	AddOrderItems(items []t.OrderItem) error
 }
 
 type ordersRouter struct {
@@ -70,7 +70,7 @@ func (or *ordersRouter) getSingleOrderHandler(res http.ResponseWriter, req *http
 
 func (or *ordersRouter) createNewOrderHandler(res http.ResponseWriter, req *http.Request) {
 	reqBody, _ := io.ReadAll(req.Body)
-	var o models.Order
+	var o t.Order
 	json.Unmarshal(reqBody, &o)
 	err := or.ctrl.CreateOrder(&o)
 	if err != nil {
@@ -83,7 +83,7 @@ func (or *ordersRouter) createNewOrderHandler(res http.ResponseWriter, req *http
 
 func (or *ordersRouter) createNewOrderItemsHandler(res http.ResponseWriter, req *http.Request) {
 	reqBody, _ := io.ReadAll(req.Body)
-	var items []models.OrderItem
+	var items []t.OrderItem
 	json.Unmarshal(reqBody, &items)
 	err := or.ctrl.AddOrderItems(items)
 	if err != nil {

@@ -1,15 +1,15 @@
 package controllers
 
 import (
-	"mofaried/api/models"
+	t "github.com/m-faried/types"
 )
 
 type IOrdersDataSource interface {
-	GetAllOrders() ([]models.Order, error)
-	GetOrderItems(o *models.Order) error
-	GetOrderByID(o *models.Order) error
-	CreateOrder(o *models.Order) error
-	CreateOrderItem(item *models.OrderItem) error
+	GetAllOrders() ([]t.Order, error)
+	GetOrderItems(o *t.Order) error
+	GetOrderByID(o *t.Order) error
+	CreateOrder(o *t.Order) error
+	CreateOrderItem(item *t.OrderItem) error
 }
 
 type OrdersController struct {
@@ -22,20 +22,20 @@ func NewOrdersController(dataSource IOrdersDataSource) *OrdersController {
 	}
 }
 
-func (c *OrdersController) GetAllOrders() ([]models.Order, error) {
+func (c *OrdersController) GetAllOrders() ([]t.Order, error) {
 	orders, err := c.ds.GetAllOrders()
 	return orders, err
 }
 
-func (c *OrdersController) GetOrderByID(id int) (*models.Order, error) {
+func (c *OrdersController) GetOrderByID(id int) (*t.Order, error) {
 	// Reading the corresponding order from the database.
-	var o models.Order
+	var o t.Order
 	o.ID = id
 	err := c.ds.GetOrderByID(&o)
 	return &o, err
 }
 
-func (c *OrdersController) CreateOrder(o *models.Order) error {
+func (c *OrdersController) CreateOrder(o *t.Order) error {
 	// Creating the order.
 	err := c.ds.CreateOrder(o)
 	if err != nil {
@@ -54,7 +54,7 @@ func (c *OrdersController) CreateOrder(o *models.Order) error {
 	return nil
 }
 
-func (c *OrdersController) AddOrderItems(items []models.OrderItem) error {
+func (c *OrdersController) AddOrderItems(items []t.OrderItem) error {
 	for _, item := range items {
 		err := c.ds.CreateOrderItem(&item)
 		if err != nil {

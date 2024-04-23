@@ -1,0 +1,21 @@
+syntax="proto3";
+option go_package = "github.com/m-faried/api/presentations/rpc";
+
+message Product {
+    int32 ID = 1;
+    string productCode = 2;
+    string name = 3;
+    int32 inventory = 4;
+    int32 price = 5;
+    string status = 6;
+}
+
+message GetProductsRequest {}
+
+message GetProductsResponse {
+    repeated Product products = 1;
+}
+
+service ECommerce {
+    rpc GetProducts (GetProductsRequest) returns (GetProductsResponse);
+}

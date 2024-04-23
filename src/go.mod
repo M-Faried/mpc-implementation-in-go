@@ -2,7 +2,7 @@ module github.com/m-faried/server
 
 go 1.22.2
 
-replace github.com/m-faried/api => ../api
+replace github.com/m-faried/api => ./api
 
 require github.com/m-faried/api v0.0.0-00010101000000-000000000000
 

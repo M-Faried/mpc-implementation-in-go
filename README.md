@@ -2,6 +2,10 @@
 
 An E-Commerce microservice supporting both HTTP and gRPC communication protocols built in Go to demo the concept of **MPC Design Pattern** which is explained in this [article](https://medium.com/@m.a.faried/mvc-or-mpc-e907f39f9e35)
 
+<p align='center'>
+    <img src='./readme/arch.png' alt='portfolio preview' width="500"/>
+</p>
+
 - **Presentations** Containing the implementation of both HTTP & gRPC protocols.
 - **Controllers** for coupling the routes to their data sources which are the same in this case.
 - **Models** The api is built using the a data access layer and DTO's located in the models folder for the accessing the database.

@@ -34,7 +34,7 @@ func (s *GrpcEcommerceServer) GetProducts(context.Context, *GetProductsRequest) 
 		return nil, err
 	}
 
-	rpcProducts := make([]*Product, len(products))
+	rpcProducts := make([]*Product, 0)
 
 	for _, prod := range products {
 		rpcProducts = append(rpcProducts, &Product{

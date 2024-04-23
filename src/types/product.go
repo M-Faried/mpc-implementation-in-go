@@ -1,4 +1,4 @@
-package models
+package types
 
 type Product struct {
 	ID          int    `json:"id"`

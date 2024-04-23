@@ -1,4 +1,4 @@
-package models
+package types
 
 type OrderItem struct {
 	OrderID   int `json:"order_id"`

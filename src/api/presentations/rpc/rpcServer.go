@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/m-faried/api/models"
+	t "github.com/m-faried/types"
 )
 
 // IProductsController is the requried interface for the product controller.
 // It contains the methods used by the GrpcEcommerceServer
 type IProductsController interface {
-	GetProducts() ([]models.Product, error)
-	GetSingleProduct(int) (*models.Product, error)
+	GetProducts() ([]t.Product, error)
+	GetSingleProduct(int) (*t.Product, error)
 }
 
 // IOrdersController is the requried interface for the order controller
@@ -76,7 +76,7 @@ func (s *GrpcEcommerceServer) GetSingleProduct(c context.Context, req *GetSignle
 	}, nil
 }
 
-func getRpcProductFromModelProduct(mProd *models.Product) *Product {
+func getRpcProductFromModelProduct(mProd *t.Product) *Product {
 	return &Product{
 		ID:          int32(mProd.ID),
 		Price:       int32(mProd.Price),

@@ -1,4 +1,4 @@
-module mofaried/api
+module github.com/m-faried/api
 
 go 1.22.2
 

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"mofaried/api"
+	"github.com/m-faried/api"
 )
 
 func main() {

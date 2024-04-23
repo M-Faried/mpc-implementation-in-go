@@ -3,12 +3,12 @@ package api
 import (
 	"fmt"
 	"log"
-	ctrls "mofaried/api/controllers"
-	"mofaried/api/models"
-	httpRouters "mofaried/api/routers/http"
 	"net/http"
 
 	"github.com/gorilla/mux"
+	ctrls "github.com/m-faried/api/controllers"
+	models "github.com/m-faried/api/models"
+	httpRouters "github.com/m-faried/api/presentations/routers"
 )
 
 type App struct {

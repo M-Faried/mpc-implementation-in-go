@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"mofaried/api/models"
+	"github.com/m-faried/api/models"
 )
 
 type IOrdersDataSource interface {

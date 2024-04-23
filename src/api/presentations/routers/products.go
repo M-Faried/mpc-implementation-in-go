@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"mofaried/api/models"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/m-faried/api/models"
 )
 
 type IProductsController interface {

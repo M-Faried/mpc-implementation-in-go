@@ -1,10 +1,10 @@
-module mofaried/server
+module github.com/m-faried/server
 
 go 1.22.2
 
-replace mofaried/api => ../api
+replace github.com/m-faried/api => ../api
 
-require mofaried/api v0.0.0-00010101000000-000000000000
+require github.com/m-faried/api v0.0.0-00010101000000-000000000000
 
 require (
 	github.com/gorilla/mux v1.8.1 // indirect

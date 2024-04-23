@@ -18,7 +18,7 @@ type App struct {
 	Port       string
 	PortGrpc   string
 	DBPath     string
-	database   *models.EcommerceDal
+	dal        *models.EcommerceDal
 	router     *mux.Router
 	grpcServer *rpc.GrpcEcommerceServer
 }
@@ -32,7 +32,7 @@ func (a *App) Initialize() {
 	// Creating & initializaing the datasource
 	var source models.EcommerceDal
 	source.Initialize(a.DBPath)
-	a.database = &source
+	a.dal = &source
 
 	// Creating & initializaing the router
 	a.initHttpRouter()
@@ -69,11 +69,11 @@ func (a *App) initHttpRouter() {
 
 	router.HandleFunc("/", healthCheck).Methods("GET")
 
-	pc := ctrls.NewProductsController(a.database)
+	pc := ctrls.NewProductsController(a.dal)
 	pr := httpRouters.NewProductsRouter(router, pc)
 	pr.InitRoutes()
 
-	oc := ctrls.NewOrdersController(a.database)
+	oc := ctrls.NewOrdersController(a.dal)
 	or := httpRouters.NewOrdersRouter(router, oc)
 	or.InitRoutes()
 
@@ -81,8 +81,8 @@ func (a *App) initHttpRouter() {
 }
 
 func (a *App) initGrpc() {
-	pc := ctrls.NewProductsController(a.database)
-	oc := ctrls.NewOrdersController(a.database)
+	pc := ctrls.NewProductsController(a.dal)
+	oc := ctrls.NewOrdersController(a.dal)
 	ps := rpc.NewGrpcEcommerceServer(pc, oc)
 	a.grpcServer = ps
 }
